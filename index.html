@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1F4FD1" />
+  <title>Spiko · Speak English. Live it.</title>
+  <meta name="description" content="Spiko — learn to speak English through real-life stories. For Arabic speakers." />
+  <link rel="icon" href="img/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Logo mark, reused via <use href="#spiko-logo"> -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="spiko-logo" viewBox="0 0 200 200"><line x1="100" y1="28" x2="100" y2="14" stroke="#0F1B3D" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="10" r="8" fill="#FF9F1C"/><path d="M50 146 L32 188 L86 164 Z" fill="#1F4FD1"/><circle cx="100" cy="100" r="72" fill="#1F4FD1"/><path d="M22 104 A78 78 0 0 1 178 104" fill="none" stroke="#0F1B3D" stroke-width="9" stroke-linecap="round"/><rect x="12" y="88" width="20" height="38" rx="10" fill="#0F1B3D"/><rect x="168" y="88" width="20" height="38" rx="10" fill="#0F1B3D"/><path d="M178 124 Q178 156 142 158" fill="none" stroke="#0F1B3D" stroke-width="5" stroke-linecap="round"/><circle cx="138" cy="158" r="7" fill="#FF9F1C"/><ellipse cx="78" cy="94" rx="13" ry="15" fill="#fff"/><ellipse cx="122" cy="94" rx="13" ry="15" fill="#fff"/><circle cx="81" cy="97" r="7" fill="#0F1B3D"/><circle cx="125" cy="97" r="7" fill="#0F1B3D"/><path d="M84 120 Q100 134 116 120" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <!-- 1. Splash -->
+  <section id="splash" class="screen splash" hidden>
+    <svg class="splash-logo" viewBox="0 0 200 200" aria-label="Spiko"><line x1="100" y1="28" x2="100" y2="14" stroke="#0F1B3D" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="10" r="8" fill="#FF9F1C"/><path d="M50 146 L32 188 L86 164 Z" fill="#1F4FD1"/><circle cx="100" cy="100" r="72" fill="#1F4FD1"/><path d="M22 104 A78 78 0 0 1 178 104" fill="none" stroke="#0F1B3D" stroke-width="9" stroke-linecap="round"/><rect x="12" y="88" width="20" height="38" rx="10" fill="#0F1B3D"/><rect x="168" y="88" width="20" height="38" rx="10" fill="#0F1B3D"/><path d="M178 124 Q178 156 142 158" fill="none" stroke="#0F1B3D" stroke-width="5" stroke-linecap="round"/><circle cx="138" cy="158" r="7" fill="#FF9F1C"/><g class="eye"><ellipse cx="78" cy="94" rx="13" ry="15" fill="#fff"/><circle cx="81" cy="97" r="7" fill="#0F1B3D"/></g><g class="eye"><ellipse cx="122" cy="94" rx="13" ry="15" fill="#fff"/><circle cx="125" cy="97" r="7" fill="#0F1B3D"/></g><path d="M84 120 Q100 134 116 120" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>
+    <div class="splash-word"><span class="wordmark">spik<b>o</b></span><span class="slogan">Speak English. Live it.</span></div>
+  </section>
+
+  <!-- 2. Intro -->
+  <section id="intro" class="screen onboard" dir="rtl" lang="ar" hidden>
+    <button class="skip" type="button" data-skip>تخطي · Skip</button>
+    <div class="onboard-body">
+      <svg class="onboard-logo" aria-hidden="true"><use href="#spiko-logo"/></svg>
+      <div id="intro-text" class="intro-text"></div>
+    </div>
+    <div class="onboard-foot">
+      <button id="intro-next" class="btn btn-primary btn-block" type="button">التالي</button>
+    </div>
+  </section>
+
+  <!-- 3. Guide -->
+  <section id="guide" class="screen onboard" dir="rtl" lang="ar" hidden>
+    <button class="skip" type="button" data-skip>تخطي · Skip</button>
+    <div class="onboard-body">
+      <svg class="onboard-logo" aria-hidden="true"><use href="#spiko-logo"/></svg>
+      <h1 id="guide-title" class="guide-title"></h1>
+      <ol id="guide-text" class="guide-text"></ol>
+    </div>
+    <div class="onboard-foot">
+      <button id="guide-start" class="btn btn-orange btn-block btn-big" type="button">يلا نبدأ</button>
+    </div>
+  </section>
+
+  <!-- 4. App (story, questions, done, my words) -->
+  <div id="app-shell" class="app-shell" hidden>
+    <header class="topbar">
+      <a href="#/" class="brand" aria-label="Spiko home">
+        <svg class="brand-logo" aria-hidden="true"><use href="#spiko-logo"/></svg>
+        <span class="wordmark">spik<b>o</b></span>
+      </a>
+      <a href="#/words" class="mywords-link" aria-label="My words">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>
+        <span>My words</span><span id="words-count" class="count-badge">0</span>
+      </a>
+    </header>
+    <main id="app" class="container" aria-live="polite"></main>
+  </div>
+
+  <!-- Word popup -->
+  <div id="word-sheet" class="sheet" hidden>
+    <div class="sheet-backdrop" data-close></div>
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheet-word">
+      <button class="sheet-x" type="button" data-close aria-label="Close">×</button>
+      <div class="sheet-head">
+        <h2 id="sheet-word" class="sheet-word"></h2>
+        <button id="sheet-say" class="icon-btn" type="button" aria-label="Hear the word">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>
+        </button>
+      </div>
+      <p id="sheet-meta" class="sheet-meta"></p>
+      <p id="sheet-meaning" class="sheet-meaning"></p>
+      <div class="sheet-actions">
+        <a id="sheet-more" class="btn btn-ghost" target="_blank" rel="noopener">More ↗</a>
+        <button id="sheet-save" class="btn btn-primary" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
