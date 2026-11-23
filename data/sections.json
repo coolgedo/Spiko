@@ -6,8 +6,17 @@
       "titleAr": "ابني مستقبلك",
       "cover": "🚀",
       "color": "blue",
-      "total": 7,
-      "stories": ["graduation-day"]
-    }
+      "open": true,
+      "topics": [
+        { "id": "graduation", "title": "Graduation",  "titleAr": "التخرج",          "cover": "🎓", "stories": [{ "number": 1, "id": "graduation-day" }] },
+        { "id": "job-search", "title": "Job Search",  "titleAr": "البحث عن وظيفة",  "cover": "🔎", "stories": [{ "number": 2 }] },
+        { "id": "interviews", "title": "Interviews",  "titleAr": "المقابلات",        "cover": "🤝", "stories": [{ "number": 3 }, { "number": 4 }, { "number": 5 }, { "number": 6 }] },
+        { "id": "work",       "title": "Work",        "titleAr": "الشغل",            "cover": "💼", "stories": [{ "number": 7 }] }
+      ]
+    },
+    { "id": "home",     "title": "Home",     "titleAr": "البيت",     "cover": "🏠", "color": "navy",   "open": false, "topics": [] },
+    { "id": "hospital", "title": "Hospital", "titleAr": "المستشفى",  "cover": "🏥", "color": "light",  "open": false, "topics": [] },
+    { "id": "travel",   "title": "Travel",   "titleAr": "السفر",     "cover": "✈️", "color": "orange", "open": false, "topics": [] },
+    { "id": "school",   "title": "School",   "titleAr": "المدرسة",   "cover": "🏫", "color": "blue",   "open": false, "topics": [] }
   ]
 }
