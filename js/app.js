@@ -5,6 +5,7 @@
 let STORIES = [];     // all loaded stories, in order, with section info
 let SECTIONS = [];    // topics from sections.json (+ .loaded stories)
 let ONBOARD = null;
+let CHARS = {};       // data/characters.json — shared by all stories
 
 async function loadJSON(url) {
   const res = await fetch(url, { cache: "no-cache" });
@@ -212,9 +213,11 @@ async function boot() {
   $$("[data-skip]").forEach((b) => b.addEventListener("click", finishOnboarding));
 
   try {
-    const [sec, dict, o] = await Promise.all([
-      loadJSON("data/sections.json"), loadJSON("data/dictionary.json"), loadJSON("data/onboarding.json")
+    const [sec, dict, o, chars] = await Promise.all([
+      loadJSON("data/sections.json"), loadJSON("data/dictionary.json"), loadJSON("data/onboarding.json"),
+      loadJSON("data/characters.json").catch(() => ({}))
     ]);
+    CHARS = chars || {};
     ONBOARD = o;
     FORMS = (dict && dict._forms) || {};
     DICT = dict || {};
