@@ -131,14 +131,17 @@ const Voice = {
    */
   forRole(role) {
     const r = role || "narrator";
-    const nth = (list, i) => list[i] || null;
     const base = this.voice;
+    // Characters avoid the narrator's voice when the device has other voices
+    const notBase = (list) => { const l = list.filter((v) => v !== base); return l.length ? l : list; };
+    const nth = (list, i) => notBase(list)[i] || null;
     switch (r) {
-      case "female":  return { voice: nth(this.females, 0) || base, pitch: this.females[0] ? 1 : 1.25 };
-      case "female2": return { voice: nth(this.females, 1) || nth(this.females, 0) || base, pitch: this.females[1] ? 1 : 1.12 };
-      case "male":    return { voice: nth(this.males, 0) || base, pitch: this.males[0] ? 1 : 0.85 };
-      case "male2":   return { voice: nth(this.males, 1) || nth(this.males, 0) || base, pitch: this.males[1] ? 1 : 0.72 };
-      case "male3":   return { voice: nth(this.males, 2) || nth(this.males, 0) || base, pitch: this.males[2] ? 0.95 : 0.62 };
+      // Same voice as another role? Change the pitch so they still sound different
+      case "female":  { const v = nth(this.females, 0); return { voice: v || base, pitch: v && v !== base ? 1 : 1.25 }; }
+      case "female2": { const v = nth(this.females, 1); return { voice: v || nth(this.females, 0) || base, pitch: v && v !== base ? 1 : 1.12 }; }
+      case "male":    { const v = nth(this.males, 0); return { voice: v || base, pitch: v && v !== base ? 1 : 0.85 }; }
+      case "male2":   { const v = nth(this.males, 1); return { voice: v || nth(this.males, 0) || base, pitch: v ? 1 : 0.72 }; }
+      case "male3":   { const v = nth(this.males, 2); return { voice: v || nth(this.males, 0) || base, pitch: v ? 0.95 : 0.65 }; }
       case "child":   return { voice: nth(this.females, 0) || base, pitch: 1.45 };
       default:        return { voice: base, pitch: 1 };
     }

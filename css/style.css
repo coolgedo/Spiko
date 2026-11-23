@@ -409,3 +409,67 @@ a { color: var(--blue); }
 .sr-body small { color: var(--muted); }
 .sr-status { font-size: .85rem; color: var(--blue); font-weight: 800; flex: none; }
 .story-row.done .sr-status { color: var(--muted); }
+
+/* ---------- Story view: scenes + chat bubbles ---------- */
+.story-hero { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.story-cover { font-size: 2.6rem; width: 64px; height: 64px; flex: none; display: grid; place-items: center; background: var(--light); border-radius: 18px; }
+.story-hero .story-title { margin: 0; font-size: 1.8rem; }
+.read-gate {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: 18px; background: var(--light); margin-bottom: 14px;
+}
+.rg-ear { font-size: 2rem; }
+.rg-body { flex: 1; display: flex; flex-direction: column; line-height: 1.25; }
+.rg-body b { font-size: 1.15rem; font-weight: 800; }
+.rg-body small { color: var(--muted); }
+.btn.pulse { animation: readPulse 1.2s ease-in-out infinite; }
+@keyframes readPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(31,79,209,.45); } 50% { box-shadow: 0 0 0 10px rgba(31,79,209,0); } }
+
+.scene { margin-bottom: 18px; }
+.scene-head {
+  display: flex; align-items: center; gap: 8px; margin: 6px 0 10px;
+  font-size: .85rem; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: .05em;
+}
+.scene-head::after { content: ""; flex: 1; height: 2px; background: var(--line); }
+.scene-place { font-size: 1.4rem; }
+.line { transition: background .25s, box-shadow .25s; border-radius: 16px; }
+.line .txt { transition: filter .4s ease, opacity .4s; }
+.line.narr { margin: 0 0 10px; padding: 6px 8px; font-size: 1.2rem; line-height: 1.75; }
+.line.narr.active { background: #FFF4E3; box-shadow: 0 0 0 3px #FFF4E3; }
+.line.say { display: flex; align-items: flex-end; gap: 8px; margin: 0 0 12px; }
+.line.say.me { flex-direction: row-reverse; }
+.avatar {
+  width: 42px; height: 42px; flex: none; border: 0; border-radius: 50%;
+  background: var(--light); font-size: 1.5rem; display: grid; place-items: center; padding: 0;
+}
+.line.say.active .avatar { animation: talk .5s ease-in-out infinite alternate; box-shadow: 0 0 0 3px var(--orange); }
+@keyframes talk { from { transform: scale(1); } to { transform: scale(1.1); } }
+.line.say .bubble {
+  max-width: 80%; padding: 8px 14px 10px; border-radius: 20px 20px 20px 6px;
+  background: var(--light); color: var(--navy); font-size: 1.2rem; line-height: 1.55;
+}
+.line.say.me .bubble { background: var(--blue); color: #fff; border-radius: 20px 20px 6px 20px; }
+.line.say.active .bubble { box-shadow: 0 0 0 3px var(--orange); }
+.bubble .who { display: block; font-size: .78rem; font-weight: 800; opacity: .7; text-transform: uppercase; letter-spacing: .04em; }
+.line.say.me .w.key { color: #fff; border-bottom-color: var(--orange); }
+.line.say.me .w:hover { color: var(--light); }
+/* Listen first: text is blurred until Read */
+.story-body.locked .txt { filter: blur(6px); opacity: .55; pointer-events: none; }
+.story-body.locked .line.active .txt { opacity: .8; }
+
+/* Sticky player at the bottom */
+.player-bar {
+  position: sticky; bottom: 0; z-index: 5;
+  margin: 18px -16px calc(-40px - env(safe-area-inset-bottom));
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom));
+  background: var(--navy); color: #fff; border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 24px rgba(15,27,61,.18);
+}
+.player-row { display: flex; align-items: center; gap: 10px; }
+.player-bar .btn-listen { flex: 1; min-height: 56px; font-size: 1.25rem; background: var(--orange); color: var(--navy); }
+.player-bar .icon-btn { width: 52px; height: 52px; background: rgba(255,255,255,.12); color: #fff; }
+.player-bar .player-status { position: absolute; left: 50%; top: -30px; transform: translateX(-50%); white-space: nowrap; margin: 0; padding: 2px 12px; border-radius: 999px; font-size: .85rem; background: var(--navy); color: #fff; pointer-events: none; }
+.player-bar .player-status:empty { display: none; }
+.speed { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.1); margin-bottom: 10px; }
+.speed button { border: 0; background: none; color: #fff; border-radius: 999px; padding: 5px 0; font-weight: 800; font-size: .88rem; opacity: .75; }
+.speed button[aria-checked="true"] { background: #fff; color: var(--navy); opacity: 1; }

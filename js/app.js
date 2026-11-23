@@ -203,102 +203,161 @@ function sentencesOf(story) {
 }
 function renderChoice(story) { location.replace(`#/story/${story.id}/questions`); }
 
-function tokenize(sentence) {
-  // Split into words (tappable) and everything else
-  return sentence.split(/([A-Za-z]+(?:['’][A-Za-z]+)*)/).map((part, i) => {
+/* =====================================================================
+   Story view: scenes with chat bubbles, a voice per character,
+   speed switch, listen first → then read, tappable words
+   ===================================================================== */
+function tokenize(text, story) {
+  // Words become tappable spans; key words of the story are highlighted
+  return String(text).split(/([A-Za-z]+(?:['’][A-Za-z]+)*)/).map((part, i) => {
     if (i % 2 === 0) return esc(part);
-    const key = lookupKeyWord(currentStory, part.toLowerCase());
+    const key = lookupKeyWord(story, part.toLowerCase());
     return `<span class="w${key && key.key ? " key" : ""}" data-w="${esc(part)}">${esc(part)}</span>`;
   }).join("");
 }
 
+function charOf(story, who) {
+  const c = (story.characters || {})[who];
+  return c || { name: who === "narrator" ? "Narrator" : who, voice: who === "narrator" ? "narrator" : "male" };
+}
+
+function lineHTML(story, line, i) {
+  const c = charOf(story, line.who);
+  if (!line.who || line.who === "narrator") {
+    return `<p class="line narr" data-i="${i}"><span class="txt">${tokenize(line.text, story)}</span></p>`;
+  }
+  return `<div class="line say${c.main ? " me" : ""}" data-i="${i}">
+      <button class="avatar" type="button" data-replay="${i}" aria-label="Hear ${esc(c.name)}">${esc(c.avatar || "🙂")}</button>
+      <div class="bubble"><span class="who">${esc(c.name)}</span><span class="txt">${tokenize(line.text, story)}</span></div>
+    </div>`;
+}
 
 function renderStory(story) {
-  currentStory = story;
-  if (state.storyId !== story.id) { state.storyId = story.id; state.index = 0; state.revealed = false; }
-  const items = sentencesOf(story);
+  const lines = linesOf(story);
+  const items = lines.map((l, i) => ({
+    text: l.text,
+    role: charOf(story, l.who).voice || "narrator",
+    audio: l.audio || (Array.isArray(story.audio) ? story.audio[i] : null)
+  }));
+  const scenes = story.scenes || [{ title: "", lines }];
   let n = 0;
-  const textHTML = (story.paragraphs || story.scenes.flatMap((sc) => sc.lines.map((l) => [l.text]))).map((p) =>
-    "<p>" + p.map((s) => `<span class="s" data-i="${n++}">${tokenize(s)}</span>`).join(" ") + "</p>"
-  ).join("");
+  const scenesHTML = scenes.map((sc, si) => `
+    <section class="scene">
+      ${sc.title ? `<div class="scene-head"><span class="scene-place">${esc(sc.place || "🎬")}</span><span>Scene ${si + 1} · ${esc(sc.title)}</span></div>` : ""}
+      ${sc.lines.map((l) => lineHTML(story, l, n++)).join("")}
+    </section>`).join("");
+  const sec = sectionById(story.sectionId);
+  const speed = store.get(KEY_SPEED, "normal");
 
   app().innerHTML = `
-    <p class="eyebrow">${esc(story.section)} · Story ${esc(story.number)}${story.sectionTotal ? ` of ${esc(story.sectionTotal)}` : ""}</p>
-    <h1 class="story-title">${esc(story.title)}</h1>
-
-    <div class="player">
-      <button id="btn-listen" class="btn btn-listen" type="button">${ICON.play}<span>Listen</span></button>
-      <button id="btn-replay" class="icon-btn" type="button" aria-label="Replay from the start">${ICON.replay}</button>
-    </div>
-    <p id="player-status" class="player-status"></p>
-
-    <div class="story-card">
-      <div id="story-locked" class="story-locked">
-        <div class="big-ear">🎧</div>
-        <h2>Listen first</h2>
-        <p>Close your eyes and just listen. Then read.</p>
-        <button id="btn-read" class="btn btn-primary" type="button">${ICON.book}<span>Read</span></button>
-      </div>
-      <div id="story-open" hidden>
-        <p class="tap-hint">Tap any word to see its meaning.</p>
-        <div id="story-text" class="story-text" lang="en">${textHTML}</div>
+    <a href="#/topic/${esc(story.sectionId)}" class="back-link">${ICON.back}${esc(story.section)}</a>
+    <div class="story-hero">
+      <span class="story-cover">${esc(story.cover || "📖")}</span>
+      <div>
+        <p class="eyebrow">Story ${esc(story.number)}${story.sectionTotal ? ` of ${esc(story.sectionTotal)}` : ""}</p>
+        <h1 class="story-title">${esc(story.title)}</h1>
       </div>
     </div>
+
+    <div id="read-gate" class="read-gate">
+      <span class="rg-ear">🎧</span>
+      <div class="rg-body"><b>Listen first</b><small>Press Listen and follow the voices. Then read.</small></div>
+      <button id="btn-read" class="btn btn-primary" type="button">${ICON.book}<span>Read</span></button>
+    </div>
+    <p id="tap-hint" class="tap-hint" hidden>Tap any word to see its meaning. Tap a face to hear the line again.</p>
+
+    <div id="story-body" class="story-body locked" lang="en">${scenesHTML}</div>
+    <div id="story-cheer"></div>
 
     <div class="next-step">
-      <a class="btn btn-navy btn-block btn-big" href="#/story/${esc(story.id)}/questions">Answer the questions →</a>
+      <a class="btn btn-navy btn-block btn-big" href="#/story/${esc(story.id)}/choice">Answer the questions →</a>
+    </div>
+
+    <div class="player-bar">
+      <div class="speed" role="radiogroup" aria-label="Speed">
+        ${SPEEDS.map((s) => `<button type="button" role="radio" data-speed="${s.id}" aria-checked="${s.id === speed}">${esc(s.label)}</button>`).join("")}
+      </div>
+      <div class="player-row">
+        <button id="btn-replay" class="icon-btn" type="button" aria-label="Start again">${ICON.replay}</button>
+        <button id="btn-listen" class="btn btn-listen" type="button">${ICON.play}<span>Listen</span></button>
+        <span id="player-status" class="player-status"></span>
+      </div>
     </div>`;
 
+  const body = $("#story-body");
   const btnListen = $("#btn-listen");
   const status = $("#player-status");
 
   const setActive = (i) => {
-    document.querySelectorAll(".s.active").forEach((el) => el.classList.remove("active"));
+    $$(".line.active", body).forEach((el) => el.classList.remove("active"));
     if (i == null) return;
-    const el = document.querySelector(`.s[data-i="${i}"]`);
-    if (el) {
-      el.classList.add("active");
-      if (state.revealed) el.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
+    const el = body.querySelector(`.line[data-i="${i}"]`);
+    if (el) { el.classList.add("active"); el.scrollIntoView({ behavior: "smooth", block: "center" }); }
   };
   const setUI = () => {
-    btnListen.innerHTML = state.playing ? `${ICON.pause}<span>Pause</span>` : `${ICON.play}<span>${state.index > 0 ? "Continue" : "Listen"}</span>`;
-    status.textContent = state.playing ? `Listening… ${state.index + 1} / ${items.length}` : (state.index > 0 ? "Paused" : "");
+    btnListen.innerHTML = state.playing ? `${ICON.pause}<span>Pause</span>`
+      : `${ICON.play}<span>${state.index > 0 ? "Continue" : (Progress.get(story.id).listened ? "Listen again" : "Listen")}</span>`;
+    const l = lines[state.index];
+    status.textContent = state.playing && l ? `${state.index + 1}/${lines.length} · ${charOf(story, l.who).name}` : (state.index > 0 ? "Paused" : "");
   };
   const play = (from) => {
     state.playing = true;
     Voice.playList(items, from, {
       onItem: (i) => { state.index = i; setActive(i); setUI(); },
-      onDone: () => { state.playing = false; state.index = 0; setActive(null); setUI(); status.textContent = state.revealed ? "Well done! Listen again or answer the questions." : "Now tap Read and follow the text."; }
+      onDone: () => {
+        state.playing = false; state.index = 0; setActive(null); setUI();
+        Progress.set(story.id, { listened: true });
+        $("#story-cheer").innerHTML = spikoSays(state.revealed
+          ? "Well done! Now answer the questions out loud."
+          : "Great listening! Now tap Read and follow the story.");
+        if (!state.revealed) { $("#btn-read").classList.add("pulse"); $("#read-gate").scrollIntoView({ behavior: "smooth", block: "center" }); }
+      }
     });
     setUI();
   };
   const pause = () => { Voice.stop(); state.playing = false; setUI(); };
-
   btnListen.onclick = () => (state.playing ? pause() : play(state.index));
   $("#btn-replay").onclick = () => { state.index = 0; play(0); };
 
+  // Speed switch — applies from the current line
+  $$("[data-speed]").forEach((b) => b.onclick = () => {
+    store.set(KEY_SPEED, b.dataset.speed);
+    $$("[data-speed]").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+    if (state.playing) play(state.index);
+  });
+
+  // Listen first → then read
   const reveal = () => {
     state.revealed = true;
-    $("#story-locked").hidden = true;
-    $("#story-open").hidden = false;
-    if (state.playing) setActive(state.index);
+    Progress.set(story.id, { read: true });
+    body.classList.remove("locked");
+    $("#read-gate").hidden = true;
+    $("#tap-hint").hidden = false;
   };
   $("#btn-read").onclick = reveal;
   if (state.revealed) reveal();
   setUI();
 
-  $("#story-text").addEventListener("click", (e) => {
+  body.addEventListener("click", (e) => {
+    const rep = e.target.closest("[data-replay]");
+    if (rep) {                                     // hear one line again
+      const i = +rep.dataset.replay;
+      state.playing = false;
+      Voice.stop();
+      setActive(i);
+      Voice.playItem(items[i], () => setActive(null));
+      setUI();
+      return;
+    }
+    if (!state.revealed) return;
     const w = e.target.closest(".w");
     if (!w) return;
     if (state.playing) pause();
-    document.querySelectorAll(".w.tapped").forEach((x) => x.classList.remove("tapped"));
+    $$(".w.tapped").forEach((x) => x.classList.remove("tapped"));
     w.classList.add("tapped");
     openWord(w.dataset.w, story);
   });
 }
-
-/* ---------- Word lookup ---------- */
 
 function closeSheet() {
   const s = $("#word-sheet");
@@ -320,7 +379,7 @@ async function openWord(raw, story) {
 
   $("#sheet-word").textContent = word;
   $("#sheet-more").href = "https://www.oxfordlearnersdictionaries.com/definition/english/" + encodeURIComponent(word.replace(/'/g, ""));
-  metaEl.textContent = key ? "Spiko word ⭐" : "";
+  metaEl.textContent = key ? (key.key ? "Key word ⭐" : "Spiko dictionary") : "";
   sheet.hidden = false;
 
   const setSave = () => {
