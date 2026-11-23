@@ -6,17 +6,18 @@ A mobile-first English learning page for Arabic speakers. Plain HTML, CSS and Ja
 1. **Splash** – the logo zooms in, blinks, then fades out.
 2. **Intro** (Arabic) – 5 full-screen slides in the style of Instagram stories, with progress bars. Each slide moves on after about 5 seconds, or when its Arabic voice-over ends. Tap the right side for the next slide, the left side to go back, and press and hold to pause. Use "تخطي" to skip.
 3. **Guide** (Arabic) → "يلا نبدأ".
-4. **Home** – a "Continue" card and topic covers with progress.
-5. **Topic** – the story list with progress for each story. Stories that aren't written yet show as "Coming soon".
-6. **Story** – scenes shown as chat bubbles, with a different voice for each character.
+4. **Home** – a "Continue" card and big section covers. "Build Your Future" is open; Home, Hospital, Travel and School are greyed out with "قريبًا".
+5. **Section** – topic cards (Graduation, Job Search, Interviews, Work), each with an emoji cover, its number of stories and how many are completed.
+6. **Topic** – its stories, with ✓ on completed ones. Story slots without content show "Coming soon".
+7. **Story** – scenes shown as chat bubbles, with a different voice for each character.
    - Speed switch: Slow, Normal or Fast.
    - Listen first: the text stays blurred until you tap **Read**.
    - Tap any word for its meaning, or tap a face to hear that line again.
-7. **Questions**
+8. **Questions**
    - Part 1, multiple choice: tap the answer, or say it.
    - Part 2, open questions: answer by voice. Spiko shows what it heard ("We heard"), gives feedback, and lets you play your answer back and show the model answer.
-8. **Story complete!** – your score, saved words, topic progress and the next story.
-9. **My words** – filter by story, Play all, meanings.
+9. **Story complete!** – your score, saved words, topic progress and the next story.
+10. **My words** – filter by story, Play all, meanings.
 
 Screens 1–3 show only on the first visit. Progress, saved words and the speed setting are kept in `localStorage`.
 
@@ -27,7 +28,7 @@ css/style.css               styles (brand colors, Baloo 2)
 js/core.js                  voices, speech recognition, recorder, storage, dictionary lookup
 js/intro.js                 splash, intro slides, guide
 js/app.js                   home, topics, story view, questions, end screen, My words
-data/sections.json          topics and the order of their stories
+data/sections.json          sections → topics → story slots
 data/stories/<id>.json      one file per story
 data/dictionary.json        simple meanings for every word + irregular forms
 data/onboarding.json        intro slides + Arabic guide text
@@ -71,15 +72,16 @@ img/logo.svg                favicon / logo
    - `words` are the key words, highlighted in the text.
    - `answer` is the position of the correct option, counting from 0.
    - `personal: true` marks a question about the learner's own life, so any full answer is fine.
-2. Add the id to its topic in `data/sections.json`, under `"stories"`.
+2. In `data/sections.json`, give the story's slot the file name as its `id`: `{ "number": 2, "id": "first-interview" }`. A slot without an `id` shows as "Coming soon".
 3. Add any new words to `data/dictionary.json`. Use the base form (`interview`, not `interviews`). Plurals, -ed, -ing and the irregular forms listed in `_forms` are found automatically. A word that's missing is looked up online.
 
-## Add a topic
-Add an object to `data/sections.json`:
+## Add a topic or section
+Topics live inside a section in `data/sections.json`:
 ```json
-{ "id": "at-work", "title": "At Work", "titleAr": "في الشغل", "cover": "💼", "color": "orange", "total": 7, "stories": [] }
+{ "id": "interviews", "title": "Interviews", "titleAr": "المقابلات", "cover": "🤝",
+  "stories": [{ "number": 3 }, { "number": 4, "id": "first-interview" }] }
 ```
-`color` can be `blue`, `navy`, `orange` or `light`. `total` is the number of planned stories; the ones not added yet show as "Coming soon".
+To open a locked section, set `"open": true` and give it `topics`. A section's `color` can be `blue`, `navy`, `orange` or `light`.
 
 ## Recorded voices (later)
 All audio goes through `Voice.playItem` in `js/core.js`. Add `"audio": "audio/first-interview/01.mp3"` to any line, and that file is played instead of the browser voice. The speed switch still works on audio files.
