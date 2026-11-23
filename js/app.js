@@ -177,7 +177,7 @@
   // Flatten a story to sentence items (text + optional recorded audio URL)
   function sentencesOf(story) {
     const items = [];
-    story.paragraphs.forEach((p) => p.forEach((text) => {
+    (story.paragraphs || story.scenes.flatMap((sc) => sc.lines.map((l) => [l.text]))).forEach((p) => p.forEach((text) => {
       const i = items.length;
       items.push({ text, audio: Array.isArray(story.audio) ? story.audio[i] : null });
     }));
@@ -426,7 +426,7 @@
     if (state.storyId !== story.id) { state.storyId = story.id; state.index = 0; state.revealed = false; }
     const items = sentencesOf(story);
     let n = 0;
-    const textHTML = story.paragraphs.map((p) =>
+    const textHTML = (story.paragraphs || story.scenes.flatMap((sc) => sc.lines.map((l) => [l.text]))).map((p) =>
       "<p>" + p.map((s) => `<span class="s" data-i="${n++}">${tokenize(s)}</span>`).join(" ") + "</p>"
     ).join("");
 

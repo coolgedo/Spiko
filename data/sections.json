@@ -4,10 +4,10 @@
       "id": "build-your-future",
       "title": "Build Your Future",
       "titleAr": "ابني مستقبلك",
+      "cover": "🚀",
+      "color": "blue",
       "total": 7,
-      "stories": [
-        "graduation-day"
-      ]
+      "stories": ["graduation-day"]
     }
   ]
 }

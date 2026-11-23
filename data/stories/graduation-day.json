@@ -2,28 +2,73 @@
   "id": "graduation-day",
   "number": 1,
   "title": "Graduation Day",
-  "paragraphs": [
-    ["Today is a big day for Omar.", "It is his graduation day."],
-    ["Omar wakes up early.", "He puts on his new suit and looks in the mirror.", "He smiles.", "\"Four years of hard work… and now it's finished!\""],
-    ["His mother is in the kitchen.", "She is very happy.", "\"My son is a graduate today!\" she says."],
-    ["At the university, there are many students and families.", "Everyone is excited.", "Omar sees his best friend, Karim.", "Karim graduated two years ago.", "Now he works in a call center."],
-    ["\"Congratulations, Omar!\" says Karim.", "\"I'm proud of you.\""],
-    ["The ceremony begins.", "The students wait for their names.", "Omar feels nervous.", "Then he hears: \"Omar Adel!\""],
-    ["He walks to the stage and takes his certificate.", "His father stands up and claps.", "His mother has tears in her eyes.", "They are happy tears."],
-    ["After the ceremony, the family goes to a restaurant to celebrate.", "They eat, laugh and take many photos."],
-    ["Then his father asks a question: \"So, Omar… what's next?\""],
-    ["Omar stops smiling.", "He doesn't have an answer.", "He has a degree, but he doesn't have a job.", "And many companies ask for one thing: good English."],
-    ["That night, Omar can't sleep.", "He thinks about his future.", "Then he opens his laptop and types: \"Jobs for fresh graduates.\""],
-    ["His journey starts now."]
+  "cover": "🎓",
+  "characters": {
+    "narrator": { "name": "Narrator", "voice": "narrator" },
+    "omar":     { "name": "Omar",     "voice": "male",   "avatar": "👨‍🎓", "main": true },
+    "mother":   { "name": "Mother",   "voice": "female", "avatar": "👩" },
+    "karim":    { "name": "Karim",    "voice": "male2",  "avatar": "🧑" },
+    "father":   { "name": "Father",   "voice": "male3",  "avatar": "👨" },
+    "speaker":  { "name": "Announcer","voice": "male2",  "avatar": "🎤" }
+  },
+  "scenes": [
+    {
+      "title": "The big morning", "place": "🏠",
+      "lines": [
+        { "who": "narrator", "text": "Today is a big day for Omar. It is his graduation day." },
+        { "who": "narrator", "text": "Omar wakes up early. He puts on his new suit and looks in the mirror. He smiles." },
+        { "who": "omar",     "text": "Four years of hard work… and now it's finished!" },
+        { "who": "narrator", "text": "His mother is in the kitchen. She is very happy." },
+        { "who": "mother",   "text": "My son is a graduate today!" }
+      ]
+    },
+    {
+      "title": "At the university", "place": "🏛️",
+      "lines": [
+        { "who": "narrator", "text": "At the university, there are many students and families. Everyone is excited." },
+        { "who": "narrator", "text": "Omar sees his best friend, Karim. Karim graduated two years ago. Now he works in a call center." },
+        { "who": "karim",    "text": "Congratulations, Omar! I'm proud of you." }
+      ]
+    },
+    {
+      "title": "The ceremony", "place": "🎤",
+      "lines": [
+        { "who": "narrator", "text": "The ceremony begins. The students wait for their names. Omar feels nervous. Then he hears:" },
+        { "who": "speaker",  "text": "Omar Adel!" },
+        { "who": "narrator", "text": "He walks to the stage and takes his certificate. His father stands up and claps. His mother has tears in her eyes. They are happy tears." }
+      ]
+    },
+    {
+      "title": "At the restaurant", "place": "🍽️",
+      "lines": [
+        { "who": "narrator", "text": "After the ceremony, the family goes to a restaurant to celebrate. They eat, laugh and take many photos." },
+        { "who": "narrator", "text": "Then his father asks a question:" },
+        { "who": "father",   "text": "So, Omar… what's next?" },
+        { "who": "narrator", "text": "Omar stops smiling. He doesn't have an answer. He has a degree, but he doesn't have a job. And many companies ask for one thing: good English." }
+      ]
+    },
+    {
+      "title": "That night", "place": "🌙",
+      "lines": [
+        { "who": "narrator", "text": "That night, Omar can't sleep. He thinks about his future. Then he opens his laptop and types:" },
+        { "who": "omar",     "text": "Jobs for fresh graduates." },
+        { "who": "narrator", "text": "His journey starts now." }
+      ]
+    }
   ],
-  "audio": null,
   "words": ["graduation", "graduate", "ceremony", "certificate", "degree", "proud", "nervous", "celebrate", "tears", "future"],
+  "choice": [
+    { "q": "When does Omar wake up?", "options": ["Late", "Early", "At noon"], "answer": 1 },
+    { "q": "Where does Karim work?", "options": ["In a bank", "In a restaurant", "In a call center"], "answer": 2 },
+    { "q": "How does Omar feel before he hears his name?", "options": ["Nervous", "Angry", "Bored"], "answer": 0 },
+    { "q": "What does Omar type on his laptop?", "options": ["Cheap restaurants", "Jobs for fresh graduates", "Graduation photos"], "answer": 1 }
+  ],
   "questions": [
-    {"q": "Why is today a big day for Omar?", "a": "Because it is his graduation day."},
-    {"q": "Who is Karim, and what does he do?", "a": "Karim is Omar's best friend. He works in a call center."},
-    {"q": "How does Omar feel before he hears his name?", "a": "He feels nervous."},
-    {"q": "What question does his father ask?", "a": "He asks, \"So, Omar, what's next?\""},
-    {"q": "Why can't Omar sleep?", "a": "Because he is thinking about his future. He has a degree, but he doesn't have a job."},
-    {"q": "Do you remember an important day in your life? How did you feel?", "a": "Example: Yes. My graduation day was very important. I felt happy and a little nervous."}
+    { "q": "Why is today a big day for Omar?", "a": "Because it is his graduation day." },
+    { "q": "Who is Karim, and what does he do?", "a": "Karim is Omar's best friend. He works in a call center." },
+    { "q": "How does Omar feel before he hears his name?", "a": "He feels nervous." },
+    { "q": "What question does his father ask?", "a": "He asks, \"So, Omar, what's next?\"" },
+    { "q": "Why can't Omar sleep?", "a": "Because he is thinking about his future. He has a degree, but he doesn't have a job." },
+    { "q": "Do you remember an important day in your life? How did you feel?", "a": "Example: Yes. My graduation day was very important. I felt happy and a little nervous.", "personal": true }
   ]
 }
