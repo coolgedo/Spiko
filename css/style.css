@@ -337,3 +337,75 @@ a { color: var(--blue); }
   .splash-logo, .splash-word { opacity: 1; transform: none; }
 }
 .stories.paused * { animation-play-state: paused !important; }
+
+/* ---------- Home: hello + continue + topic covers ---------- */
+.hello { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 16px; }
+.hello-small { margin: 0; color: var(--muted); }
+.hello-title { margin: 0; font-size: 1.75rem; font-weight: 800; line-height: 1.15; }
+.hello-stat {
+  flex: none; text-align: center; background: var(--light); border-radius: var(--radius);
+  padding: 10px 14px; font-size: .78rem; line-height: 1.15; color: var(--muted);
+}
+.hello-stat b { display: block; font-size: 1.8rem; color: var(--blue); }
+.continue-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px; border-radius: 22px; text-decoration: none;
+  background: var(--navy); color: #fff; box-shadow: var(--shadow);
+}
+.cc-cover { font-size: 2.4rem; width: 60px; height: 60px; flex: none; display: grid; place-items: center; background: rgba(255,255,255,.1); border-radius: 16px; }
+.cc-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.cc-body small { color: var(--orange); font-size: .82rem; }
+.cc-body b { font-size: 1.25rem; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
+.cc-go { width: 46px; height: 46px; flex: none; border-radius: 50%; background: var(--orange); color: var(--navy); display: grid; place-items: center; }
+.cc-go svg { width: 24px; height: 24px; fill: currentColor; }
+.continue-card .progress { background: rgba(255,255,255,.18); }
+.h2 { font-size: 1.35rem; font-weight: 800; margin: 24px 0 10px; }
+.covers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cover {
+  position: relative; display: flex; flex-direction: column; gap: 2px;
+  min-height: 190px; padding: 14px; border-radius: 22px; overflow: hidden;
+  text-decoration: none; box-shadow: var(--shadow);
+  animation: fadeUp .45s ease both;
+}
+.cover:active { transform: scale(.98); }
+.cover-emoji { font-size: 3.2rem; line-height: 1.1; margin-bottom: auto; }
+.cover-title { font-weight: 800; font-size: 1.15rem; line-height: 1.15; }
+.cover-ar { font-size: .95rem; opacity: .85; }
+.cover-meta { font-size: .8rem; opacity: .85; margin-top: 4px; }
+.cover .progress { margin: 6px 0 0; }
+.cover-blue   { background: var(--blue);   color: #fff; }
+.cover-navy   { background: var(--navy);   color: #fff; }
+.cover-orange { background: var(--orange); color: var(--navy); }
+.cover-light  { background: var(--light);  color: var(--navy); }
+.cover-blue .progress, .cover-navy .progress { background: rgba(255,255,255,.22); }
+.cover-orange .progress span { background: var(--navy); }
+.cover-light .progress { background: #fff; }
+.progress.thin { height: 6px; margin: 4px 0 0; }
+
+/* ---------- Topic: story list ---------- */
+.back-link { display: inline-flex; align-items: center; gap: 2px; color: var(--blue); text-decoration: none; font-weight: 800; margin: 0 0 10px -6px; }
+.back-link svg { width: 24px; height: 24px; fill: currentColor; }
+.topic-head { display: flex; align-items: center; gap: 14px; padding: 18px; border-radius: 22px; }
+.topic-head .cover-emoji { font-size: 3.4rem; margin: 0; }
+.topic-head h1 { margin: 0; font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
+.topic-head p { margin: 2px 0 0; opacity: .85; }
+.topic-head small { opacity: .8; }
+.topic-head + .progress { margin-top: 12px; }
+.story-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.story-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; border-radius: 18px; border: 2px solid var(--line);
+  text-decoration: none; color: var(--navy); background: #fff;
+}
+.story-row:active { transform: scale(.99); }
+.story-row.done { border-color: var(--light); background: #F6F9FF; }
+.story-row.soon { opacity: .55; }
+.sr-num { width: 32px; height: 32px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--light); color: var(--blue); font-weight: 800; }
+.story-row.done .sr-num { background: var(--blue); color: #fff; }
+.sr-num svg { width: 18px; height: 18px; fill: currentColor; }
+.sr-cover { font-size: 2rem; width: 40px; text-align: center; flex: none; }
+.sr-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sr-body b { font-size: 1.1rem; font-weight: 800; line-height: 1.2; }
+.sr-body small { color: var(--muted); }
+.sr-status { font-size: .85rem; color: var(--blue); font-weight: 800; flex: none; }
+.story-row.done .sr-status { color: var(--muted); }
