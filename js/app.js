@@ -201,7 +201,6 @@ function lookupKeyWord(story, word) {
 function sentencesOf(story) {
   return linesOf(story).map((l, i) => ({ text: l.text, audio: l.audio || (Array.isArray(story.audio) ? story.audio[i] : null) }));
 }
-function renderChoice(story) { location.replace(`#/story/${story.id}/questions`); }
 
 /* =====================================================================
    Story view: scenes with chat bubbles, a voice per character,
@@ -424,82 +423,267 @@ async function openWord(raw, story) {
 }
 
 
-/* ---------- Questions ---------- */
-const CHEERS = [
-  "Great job! Now listen to the model answer and repeat it.",
-  "Well done! Play your answer, then compare it with the model answer.",
-  "Nice! Your voice sounds great. Now listen to the model answer and repeat it.",
-  "Awesome! Speaking out loud is how you learn. Now check the model answer."
-];
+/* =====================================================================
+   Questions — part 1: multiple choice (tap or say the answer)
+               part 2: open questions (answer by voice → "We heard", feedback)
+   ===================================================================== */
+const STOP_WORDS = new Set("a an the is are was were am be to of in on at and or but so he she it they i you we his her their my your our its this that there then do does did not no yes because example".split(" "));
 
-function renderQuestions(story) {
-  currentStory = story;
-  if (state.storyId !== story.id) { state.storyId = story.id; state.index = 0; state.revealed = false; state.qIndex = 0; }
-  const total = story.questions.length;
-  const qi = Math.min(state.qIndex, total - 1);
-  const q = story.questions[qi];
-  Recorder.reset();
+function normWords(text) {
+  return (String(text).toLowerCase().replace(/[’]/g, "'").match(/[a-z]+(?:'[a-z]+)?/g) || [])
+    .map((w) => { const r = lookupWord(w); return r ? r.base : w.replace(/s$/, ""); });
+}
+function contentWords(text) { return normWords(text).filter((w) => !STOP_WORDS.has(w)); }
+
+/** Which option did the learner say? → index or -1 */
+function matchOption(transcript, options) {
+  const t = transcript.toLowerCase().trim();
+  const letter = t.match(/^(?:option |answer |letter |the )?([abc])\b|^(?:option |answer )?(one|two|three|first|second|third)\b/);
+  if (letter) {
+    const m = letter[1] || letter[2];
+    const map = { a: 0, b: 1, c: 2, one: 0, two: 1, three: 2, first: 0, second: 1, third: 2 };
+    if (map[m] != null && map[m] < options.length) return map[m];
+  }
+  const said = new Set(normWords(t));
+  let best = -1, bestScore = 0, tie = false;
+  options.forEach((opt, i) => {
+    const words = contentWords(opt).length ? contentWords(opt) : normWords(opt);
+    const hit = words.filter((w) => said.has(w)).length / Math.max(words.length, 1);
+    if (hit > bestScore) { best = i; bestScore = hit; tie = false; } else if (hit === bestScore && hit > 0) tie = true;
+  });
+  return bestScore >= 0.5 && !tie ? best : -1;
+}
+
+/** Compare an open answer with the model answer → { level, hits } */
+function gradeAnswer(transcript, q) {
+  const said = normWords(transcript);
+  if (!said.length) return { level: "none", hits: new Set() };
+  if (q.personal) return { level: said.length >= 6 ? "great" : said.length >= 3 ? "good" : "try", hits: new Set() };
+  const model = [...new Set(contentWords(q.a))];
+  const saidSet = new Set(said);
+  const hits = new Set(model.filter((w) => saidSet.has(w)));
+  const score = hits.size / Math.max(model.length, 1);
+  return { level: score >= 0.6 ? "great" : score >= 0.3 ? "good" : "try", hits };
+}
+
+const FEEDBACK = {
+  great: ["Excellent! 🎉 That's a great answer. Now listen to the model answer and repeat it.",
+          "Wow, great English! Listen to the model answer and say it one more time."],
+  good:  ["Good job! You're close. Now listen to the model answer and repeat it.",
+          "Nice! Now listen to the model answer and repeat it."],
+  try:   ["Nice try! Listen to the model answer, then say it again out loud.",
+          "Good effort! Tap “Show answer”, listen, and try once more."],
+  none:  ["I didn't hear any words. Tap the mic and speak a little louder."]
+};
+const pick = (arr, i) => arr[i % arr.length];
+
+function heardHTML(text, hits) {
+  if (!text) return "";
+  const html = text.split(/(\s+)/).map((w) => {
+    const b = normWords(w)[0];
+    return b && hits && hits.has(b) ? `<mark>${esc(w)}</mark>` : esc(w);
+  }).join("");
+  return `<small>We heard</small>“${html}”`;
+}
+
+function qHeader(story, part, title, i, total) {
+  return `
+    <a href="#/story/${esc(story.id)}" class="back-link">${ICON.back}${esc(story.title)}</a>
+    <p class="eyebrow">${part}</p>
+    <h1 class="page-title">${title} <span class="q-count">${i + 1} / ${total}</span></h1>
+    ${progressBar((i + 1) / total)}`;
+}
+
+/* ---------- Part 1: multiple choice ---------- */
+function renderChoice(story) {
+  const list = story.choice || [];
+  if (!list.length) { location.replace(`#/story/${story.id}/questions`); return; }
+  const i = Math.min(state.cIndex, list.length - 1);
+  if (i === 0) state.choiceScore = 0;
+  const q = list[i];
+  const canSpeak = Listener.supported();
+  let answered = false;
 
   app().innerHTML = `
-    <a href="#/story/${esc(story.id)}" class="eyebrow" style="text-decoration:none">← ${esc(story.title)}</a>
-    <h1 class="page-title" style="margin-top:6px">Question ${qi + 1} of ${total}</h1>
-    <div class="progress"><span style="width:${((qi + 1) / total) * 100}%"></span></div>
-
+    ${qHeader(story, "Part 1 · Choose the answer", "Question", i, list.length)}
     <div class="q-card">
       <div class="q-row">
         <p class="q-text" lang="en">${esc(q.q)}</p>
         <button id="q-say" class="icon-btn" type="button" aria-label="Hear the question">${ICON.speaker}</button>
       </div>
+      <div class="options">
+        ${q.options.map((o, k) => `<button class="option" type="button" data-opt="${k}"><span class="opt-letter">${"ABC"[k] || k + 1}</span><span>${esc(o)}</span></button>`).join("")}
+      </div>
+      ${canSpeak ? `<button id="c-mic" class="btn btn-primary btn-block mic-btn" type="button">${ICON.mic}<span>Say your answer</span></button>` : ""}
+      <p id="c-heard" class="heard" hidden></p>
+    </div>
+    <div id="c-feedback"></div>
+    <button id="c-next" class="btn btn-orange btn-block btn-big" type="button" hidden>${i + 1 < list.length ? "Next →" : "Part 2: Speak →"}</button>`;
+
+  const readQuestion = () => Voice.say(`${q.q} ${q.options.map((o, k) => `${"ABC"[k]}: ${o}.`).join(" ")}`);
+  $("#q-say").onclick = readQuestion;
+  setTimeout(() => { if ($("#q-say")) readQuestion(); }, 300);
+
+  const choose = (k, how) => {
+    if (answered) return;
+    answered = true;
+    Listener.abort();
+    const ok = k === q.answer;
+    if (ok) state.choiceScore++;
+    $$(".option").forEach((b, n) => {
+      b.disabled = true;
+      if (n === q.answer) b.classList.add("correct");
+      else if (n === k) b.classList.add("wrong");
+    });
+    const right = q.options[q.answer];
+    $("#c-feedback").innerHTML = spikoSays(ok ? `Correct! 🎉 ${how === "voice" ? "Great speaking!" : ""}` : `Not quite. The answer is: “${right}”. Say it out loud!`, ok ? "good" : "");
+    Voice.say(ok ? `Correct! ${right}.` : `The answer is: ${right}.`);
+    const mic = $("#c-mic"); if (mic) mic.hidden = true;
+    $("#c-next").hidden = false;
+  };
+  $$(".option").forEach((b) => b.onclick = () => choose(+b.dataset.opt, "tap"));
+
+  const mic = $("#c-mic");
+  if (mic) mic.onclick = () => {
+    if (Listener.rec) { Listener.stop(); return; }
+    Voice.stop();
+    const heard = $("#c-heard");
+    heard.hidden = false;
+    heard.innerHTML = "<small>Listening…</small>";
+    mic.classList.add("recording");
+    mic.innerHTML = `${ICON.stop}<span>Listening… tap to stop</span>`;
+    try {
+      Listener.start({
+        onUpdate: (t) => { heard.innerHTML = heardHTML(t); },
+        onEnd: (t, err) => {
+          mic.classList.remove("recording");
+          mic.innerHTML = `${ICON.mic}<span>Say your answer</span>`;
+          if (answered) return;
+          if (err === "not-allowed" || err === "service-not-allowed") { heard.innerHTML = "<small>Please allow the microphone, or tap an answer.</small>"; return; }
+          const k = t ? matchOption(t, q.options) : -1;
+          heard.innerHTML = t ? heardHTML(t) : "<small>I didn't hear you. Try again or tap an answer.</small>";
+          if (k >= 0) choose(k, "voice");
+          else if (t) $("#c-feedback").innerHTML = spikoSays("Hmm, I didn't catch which one. Say the answer again, or tap it.");
+        }
+      });
+    } catch (e) { mic.hidden = true; heard.innerHTML = "<small>Voice isn't available here. Tap an answer.</small>"; }
+  };
+
+  $("#c-next").onclick = () => {
+    Voice.stop();
+    if (i + 1 < list.length) { state.cIndex = i + 1; renderChoice(story); window.scrollTo(0, 0); }
+    else {
+      Progress.set(story.id, { choice: { score: state.choiceScore, total: list.length } });
+      state.cIndex = 0; state.qIndex = 0;
+      location.hash = `#/story/${story.id}/questions`;
+    }
+  };
+}
+
+/* ---------- Part 2: open questions by voice ---------- */
+function renderQuestions(story) {
+  const list = story.questions || [];
+  if (!list.length) { location.replace(`#/story/${story.id}/done`); return; }
+  const qi = Math.min(state.qIndex, list.length - 1);
+  const q = list[qi];
+  const canHear = Listener.supported();
+  const canRecord = Recorder.supported();
+  Recorder.reset();
+
+  app().innerHTML = `
+    ${qHeader(story, "Part 2 · Answer out loud", "Question", qi, list.length)}
+    <div class="q-card">
+      <div class="q-row">
+        <p class="q-text" lang="en">${esc(q.q)}</p>
+        <button id="q-say" class="icon-btn" type="button" aria-label="Hear the question">${ICON.speaker}</button>
+      </div>
+      <p class="q-tip">Answer in a full sentence, out loud.</p>
       <div class="q-actions">
-        <button id="q-rec" class="btn btn-primary btn-big" type="button">${ICON.mic}<span>Record my answer</span></button>
+        <button id="q-rec" class="btn btn-primary btn-big mic-btn" type="button">${ICON.mic}<span>Answer by voice</span></button>
         <div class="row2">
           <button id="q-play" class="btn btn-outline" type="button" disabled>${ICON.play}<span>Play my answer</span></button>
           <button id="q-show" class="btn btn-outline" type="button">${ICON.eye}<span>Show answer</span></button>
         </div>
       </div>
+      <p id="q-heard" class="heard" hidden></p>
       <p id="q-err" class="mic-error" hidden></p>
       <div id="q-answer"></div>
     </div>
     <div id="q-cheer"></div>
-    <button id="q-next" class="btn btn-orange btn-block btn-big" type="button" style="margin-top:16px">${qi + 1 < total ? "Next →" : "Finish ✓"}</button>`;
+    <button id="q-next" class="btn btn-orange btn-block btn-big" type="button">${qi + 1 < list.length ? "Next →" : "Finish ✓"}</button>`;
 
   const recBtn = $("#q-rec");
   const playBtn = $("#q-play");
+  const heard = $("#q-heard");
   const err = $("#q-err");
-  let recording = false;
+  let active = false;
 
   $("#q-say").onclick = () => Voice.say(q.q);
   setTimeout(() => { if ($("#q-say")) Voice.say(q.q); }, 300);
 
-  if (!Recorder.supported()) {
+  if (!canHear && !canRecord) {
     recBtn.disabled = true;
     err.hidden = false;
-    err.textContent = "Recording is not supported in this browser. Answer out loud anyway!";
+    err.textContent = "This browser can't use the microphone. Answer out loud anyway, then tap Show answer!";
   }
+
+  const idle = (label) => { active = false; recBtn.classList.remove("recording"); recBtn.innerHTML = `${ICON.mic}<span>${label}</span>`; };
+
+  const finish = async (transcript, error) => {
+    if (!active) return;
+    await Recorder.stop();
+    idle("Answer again");
+    if (Recorder.url) playBtn.disabled = false;
+    if (error === "not-allowed" || error === "service-not-allowed") {
+      err.hidden = false;
+      err.textContent = "Please allow the microphone so Spiko can hear you (check your browser settings).";
+      return;
+    }
+    if (canHear) {
+      const g = gradeAnswer(transcript, q);
+      heard.hidden = false;
+      heard.innerHTML = transcript ? heardHTML(transcript, g.hits) : "<small>We heard</small>…nothing yet.";
+      $("#q-cheer").innerHTML = spikoSays(pick(FEEDBACK[g.level], qi), g.level === "great" ? "good" : "");
+      if (g.level !== "none") Progress.set(story.id, { answered: Math.max(Progress.get(story.id).answered || 0, qi + 1) });
+    } else {
+      $("#q-cheer").innerHTML = spikoSays("Great job! Play your answer, then listen to the model answer and repeat it.");
+      Progress.set(story.id, { answered: Math.max(Progress.get(story.id).answered || 0, qi + 1) });
+    }
+  };
 
   recBtn.onclick = async () => {
     err.hidden = true;
-    if (!recording) {
-      Voice.stop();
-      try {
-        await Recorder.start();
-      } catch (e) {
-        err.hidden = false;
-        err.textContent = e && e.name === "NotAllowedError"
-          ? "Please allow the microphone so Spiko can hear you. (Check your browser settings.)"
-          : "Couldn't start the microphone. Answer out loud anyway!";
-        return;
+    if (active) {                                   // stop
+      if (Listener.rec) Listener.stop();            // → onEnd → finish
+      else finish("", null);
+      return;
+    }
+    Voice.stop();
+    active = true;
+    recBtn.classList.add("recording");
+    recBtn.innerHTML = `${ICON.stop}<span>Listening… tap to stop</span>`;
+    heard.hidden = !canHear;
+    heard.innerHTML = "<small>Listening…</small>";
+    if (canRecord) {
+      try { await Recorder.start(); }
+      catch (e) {
+        if (!canHear) {
+          idle("Answer by voice");
+          err.hidden = false;
+          err.textContent = e && e.name === "NotAllowedError"
+            ? "Please allow the microphone so Spiko can hear you (check your browser settings)."
+            : "Couldn't start the microphone. Answer out loud anyway!";
+          return;
+        }
       }
-      recording = true;
-      recBtn.classList.add("recording");
-      recBtn.innerHTML = `${ICON.stop}<span>Stop recording</span>`;
-    } else {
-      recording = false;
-      await Recorder.stop();
-      recBtn.classList.remove("recording");
-      recBtn.innerHTML = `${ICON.mic}<span>Record again</span>`;
-      playBtn.disabled = false;
-      $("#q-cheer").innerHTML = spikoSays(CHEERS[qi % CHEERS.length]);
+    }
+    if (canHear) {
+      try {
+        Listener.start({
+          onUpdate: (t) => { heard.innerHTML = heardHTML(t); },
+          onEnd: (t, e) => finish(t, e)
+        });
+      } catch (e) { /* recording still works */ }
     }
   };
 
@@ -509,19 +693,23 @@ function renderQuestions(story) {
   };
 
   $("#q-show").onclick = () => {
-    $("#q-answer").innerHTML = `<div class="model-answer" lang="en"><small>Model answer</small>${esc(q.a)}</div>`;
-    Voice.say(q.a);
+    $("#q-answer").innerHTML = `<div class="model-answer" lang="en"><small>Model answer</small>${esc(q.a)}
+      <button class="icon-btn" type="button" id="q-model-say" aria-label="Hear the model answer">${ICON.speaker}</button></div>`;
+    $("#q-model-say").onclick = () => Voice.say(q.a.replace(/^Example:\s*/i, ""));
+    Voice.say(q.a.replace(/^Example:\s*/i, ""));
   };
 
   $("#q-next").onclick = () => {
-    Voice.stop();
-    Recorder.reset();
-    if (qi + 1 < total) { state.qIndex = qi + 1; renderQuestions(story); window.scrollTo(0, 0); }
-    else { state.qIndex = 0; location.hash = `#/story/${story.id}/done`; }
+    Voice.stop(); Listener.abort(); Recorder.reset();
+    if (qi + 1 < list.length) { state.qIndex = qi + 1; renderQuestions(story); window.scrollTo(0, 0); }
+    else {
+      state.qIndex = 0;
+      Progress.set(story.id, { answered: list.length, done: true });
+      location.hash = `#/story/${story.id}/done`;
+    }
   };
 }
 
-/* ---------- Done ---------- */
 function renderDone(story) {
   const idx = STORIES.indexOf(story);
   const next = STORIES[idx + 1];

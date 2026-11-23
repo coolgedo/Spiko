@@ -473,3 +473,33 @@ a { color: var(--blue); }
 .speed { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.1); margin-bottom: 10px; }
 .speed button { border: 0; background: none; color: #fff; border-radius: 999px; padding: 5px 0; font-weight: 800; font-size: .88rem; opacity: .75; }
 .speed button[aria-checked="true"] { background: #fff; color: var(--navy); opacity: 1; }
+
+/* ---------- Questions: multiple choice + open ---------- */
+.q-count { color: var(--muted); font-size: 1.1rem; }
+.page-title + .progress { margin-top: 8px; }
+.options { display: grid; gap: 10px; margin-top: 16px; }
+.option {
+  display: flex; align-items: center; gap: 12px; text-align: left;
+  min-height: 56px; padding: 10px 14px; border: 2px solid transparent; border-radius: 16px;
+  background: #fff; color: var(--navy); font-weight: 800; font-size: 1.15rem;
+  transition: transform .1s, background .2s, border-color .2s;
+}
+.option:active { transform: scale(.98); }
+.option:disabled { cursor: default; transform: none; }
+.opt-letter { width: 32px; height: 32px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--light); color: var(--blue); font-size: .95rem; }
+.option.correct { border-color: #22A06B; background: #E3F7EE; }
+.option.correct .opt-letter { background: #22A06B; color: #fff; }
+.option.wrong { border-color: #E5383B; background: #FDECEC; animation: shake .35s; }
+.option.wrong .opt-letter { background: #E5383B; color: #fff; }
+@keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+.mic-btn { margin-top: 14px; }
+.q-tip { margin: 6px 0 0; color: var(--muted); font-size: .95rem; }
+.heard {
+  margin: 14px 0 0; padding: 12px 14px; border-radius: 16px; background: #fff;
+  font-size: 1.15rem; line-height: 1.5; border: 2px dashed var(--light);
+}
+.heard small { display: block; color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+.heard mark { background: #FFE7C2; color: var(--navy); border-radius: 4px; padding: 0 2px; }
+.model-answer { position: relative; padding-right: 60px; }
+.model-answer .icon-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
+.spiko-says.good .bubble { background: #E3F7EE; }
