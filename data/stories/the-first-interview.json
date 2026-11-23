@@ -1,0 +1,59 @@
+{
+  "id": "the-first-interview",
+  "number": 3,
+  "title": "The First Interview",
+  "cover": "😬",
+  "scenes": [
+    {"title": "Adam's room, 8:45 a.m.", "emoji": "⏰", "lines": [
+        {"who": "mom", "text": "Adam! It's quarter to nine! Isn't your interview at ten?"},
+        {"who": "adam", "text": "What?! My phone died! My alarm didn't ring!"}
+    ]},
+    {"title": "The front door", "emoji": "🚪", "lines": [
+        {"who": "mom", "text": "You're wearing jeans? To an interview?"},
+        {"who": "adam", "text": "No time, Mom! Bye!"}
+    ]},
+    {"title": "In a taxi", "emoji": "🚕", "sound": "car horns", "lines": [
+        {"who": "adam", "text": "Please, can you go faster?"},
+        {"who": "driver", "text": "Faster? Look at this traffic, my friend. Nobody is going anywhere."}
+    ]},
+    {"title": "Reception, 10:10 a.m.", "emoji": "🏢", "lines": [
+        {"who": "receptionist", "text": "Good morning. Can I help you?"},
+        {"who": "adam", "text": "Hi… sorry… I'm Adam Fares. I have an interview at ten. I'm late, I'm so sorry."},
+        {"who": "receptionist", "text": "Please take a seat. Ms. Nadia will call you."},
+        {"who": "candidate", "text": "First interview?"},
+        {"who": "adam", "text": "Is it that obvious?"},
+        {"who": "candidate", "text": "You're breathing very fast. And… you're wearing jeans."}
+    ]},
+    {"title": "Nadia's office", "emoji": "💼", "lines": [
+        {"who": "nadia", "text": "Adam? Come in, please. I'm Nadia, the hiring manager. Have a seat."},
+        {"who": "adam", "text": "Thank you."},
+        {"who": "nadia", "text": "So, Adam, tell me about yourself."},
+        {"who": "adam", "text": "Um… my name is Adam. I am, like, twenty-three years old. I… um… graduated from university."},
+        {"who": "nadia", "text": "OK. Why do you want to work with us?"},
+        {"who": "adam", "text": "Because… um… I need a job. And the salary is good."},
+        {"who": "nadia", "text": "I see. Last question. How do you handle stress?"},
+        {"who": "adam", "text": "Stress? Um… I like working in a team. Teamwork is very important."},
+        {"who": "nadia", "text": "…Thank you, Adam. We will contact you."}
+    ]},
+    {"title": "Outside the building", "emoji": "😓", "lines": [
+        {"who": "adam", "text": "That was terrible. \"I like working in a team\"? She asked about stress!"},
+        {"who": "adam", "text": "Maybe it wasn't that bad. Maybe they will call me."}
+    ]}
+  ],
+  "words": ["interview", "alarm", "traffic", "reception", "candidate", "obvious", "breathe", "hiring", "manager", "handle", "stress", "teamwork", "terrible"],
+  "choice": [
+    {"q": "Why is Adam late?", "options": ["his alarm didn't ring", "he lost his CV", "he went to the wrong company"], "answer": 0},
+    {"q": "What is Adam wearing?", "options": ["a suit", "jeans", "a uniform"], "answer": 1},
+    {"q": "Who is Nadia?", "options": ["the receptionist", "the hiring manager", "Adam's teacher"], "answer": 1},
+    {"q": "\"Obvious\" means…", "options": ["easy to see", "very expensive", "very far"], "answer": 0},
+    {"q": "What does Adam talk about when Nadia asks about stress?", "options": ["his family", "teamwork", "football"], "answer": 1}
+  ],
+  "questions": [
+    {"q": "Why is Adam late?", "a": "Because his phone died and his alarm didn't ring."},
+    {"q": "What does Mom notice about Adam's clothes?", "a": "He is wearing jeans to an interview."},
+    {"q": "How does the other candidate know it's Adam's first interview?", "a": "Adam is breathing very fast, and he is wearing jeans."},
+    {"q": "What is Adam's answer to \"Why do you want to work with us?\"", "a": "He says, \"Because I need a job, and the salary is good.\""},
+    {"q": "What mistake does Adam make with the stress question?", "a": "He talks about teamwork, not about stress."},
+    {"q": "If Nadia asked you \"Tell me about yourself,\" what would you say?", "a": "Example: I'm Mona. I'm a business graduate, and I love working with people.", "personal": true}
+  ]
+}

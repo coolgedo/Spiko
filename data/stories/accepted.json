@@ -1,0 +1,48 @@
+{
+  "id": "accepted",
+  "number": 7,
+  "title": "Accepted",
+  "cover": "🎉",
+  "scenes": [
+    {"title": "The supermarket", "emoji": "🛒", "sound": "phone ringing", "lines": [
+        {"who": "mom", "text": "Adam, your phone!"},
+        {"who": "adam", "text": "It's BlueLine! Hello?"},
+        {"who": "nadia", "text": "Hello, Adam. This is Nadia. I have good news. We would like to offer you the position of Customer Service Agent. Congratulations!"},
+        {"who": "adam", "text": "Really? Thank you! Thank you so much! I accept!"},
+        {"who": "nadia", "text": "Wonderful. We'll send you the job offer by email. Your training starts on the first of next month. Welcome to the team!"},
+        {"who": "adam", "text": "Mom… I got the job!"},
+        {"who": "mom", "note": "a bag of oranges falls", "text": "You got the job? My son got the job!"}
+    ]},
+    {"title": "Home, evening", "emoji": "🎉", "sound": "family celebrating", "lines": [
+        {"who": "dad", "text": "A few weeks ago, I asked you, \"What's next?\" Now I know the answer. I'm proud of you, son."},
+        {"who": "lina", "text": "And I'm proud of me. I was the interviewer!"},
+        {"who": "uncle", "text": "A call center? Good, good. You know, my neighbor's son…"},
+        {"who": "everyone", "text": "Uncle!"},
+        {"who": "uncle", "text": "OK, OK! Congratulations, Adam!"}
+    ]},
+    {"title": "Phone call", "emoji": "📞", "lines": [
+        {"who": "adam", "text": "Sami, I did it! Thank you. I couldn't do it without you."},
+        {"who": "sami", "text": "No, you did it. I only showed you the way. You did the hard work."}
+    ]},
+    {"title": "Adam's room, night", "emoji": "🌙", "lines": [
+        {"who": "adam", "text": "The graduation… the rejection… the weeks of practice… and today. Failure isn't the end. It's a lesson."},
+        {"who": "adam", "text": "But next month, I'll talk to real customers… in English. Am I ready for that?"}
+    ]}
+  ],
+  "words": ["offer", "position", "accept", "training", "wonderful", "proud", "failure", "lesson", "ready"],
+  "choice": [
+    {"q": "Where is Adam when Nadia calls?", "options": ["at home", "at the supermarket", "at the café"], "answer": 1},
+    {"q": "What does Nadia offer Adam?", "options": ["the position of Customer Service Agent", "a car", "a free course"], "answer": 0},
+    {"q": "When does the training start?", "options": ["tomorrow", "on the first of next month", "next year"], "answer": 1},
+    {"q": "\"Accept\" means…", "options": ["say yes", "say no", "say sorry"], "answer": 0},
+    {"q": "What does Adam learn?", "options": ["failure isn't the end, it's a lesson", "jobs are easy", "English is not important"], "answer": 0}
+  ],
+  "questions": [
+    {"q": "Where is Adam when Nadia calls?", "a": "He is at the supermarket with his mother."},
+    {"q": "What does Nadia offer Adam?", "a": "The position of Customer Service Agent."},
+    {"q": "What does Dad say about his question \"What's next?\"", "a": "He says, \"Now I know the answer. I'm proud of you, son.\""},
+    {"q": "Why does everyone shout \"Uncle!\"?", "a": "Because he starts talking about his neighbor's son again."},
+    {"q": "What important thing did Adam learn?", "a": "Failure isn't the end. It's a lesson."},
+    {"q": "What is a lesson you learned from a mistake?", "a": "Example: I was late for an important meeting, and I learned to always leave early.", "personal": true}
+  ]
+}

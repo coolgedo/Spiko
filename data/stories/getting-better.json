@@ -1,0 +1,53 @@
+{
+  "id": "getting-better",
+  "number": 5,
+  "title": "Getting Better",
+  "cover": "💪",
+  "scenes": [
+    {"title": "The café, 6:00 p.m.", "emoji": "☕", "sound": "coffee machine", "lines": [
+        {"who": "sami", "text": "An interview is like a football match. You can't win without training. Ready?"},
+        {"who": "adam", "text": "Ready."},
+        {"who": "sami", "text": "Step one: research. Learn about the company. Read their website. What do they do? What are their goals?"},
+        {"who": "adam", "text": "Research. Got it."},
+        {"who": "sami", "text": "Step two: practice. Some questions come in almost every interview. \"Tell me about yourself.\" \"Why do you want this job?\" \"How do you handle stress?\" Prepare your answers. Then record yourself and listen."},
+        {"who": "adam", "text": "Record myself? That's weird."},
+        {"who": "sami", "text": "Weird, but it works. You'll hear every \"um\" and every \"like.\""},
+        {"who": "sami", "text": "Step three: listen. Listen to the whole question. Then pause, think, and answer. It's OK to say, \"That's a good question. Let me think.\""},
+        {"who": "sami", "text": "Step four: be professional. Wear a suit. Arrive early. Smile and make eye contact."},
+        {"who": "adam", "text": "Research, practice, listen, be professional. I can do this."}
+    ]},
+    {"title": "Adam's room, one week later", "emoji": "🎙️", "sound": "phone recording", "lines": [
+        {"who": "adam", "text": "Tell me about yourself… Hi, I'm Adam. Um… no. Again."},
+        {"who": "lina", "text": "Who are you talking to?"},
+        {"who": "adam", "text": "Myself. It's Sami's idea."},
+        {"who": "lina", "text": "Can I be the interviewer?"},
+        {"who": "adam", "text": "Please!"},
+        {"who": "lina", "text": "Mr. Fares, how do you handle stress?"},
+        {"who": "adam", "text": "That's a good question. When I feel stressed, I stay calm and focus on one problem at a time."},
+        {"who": "lina", "text": "Wow! Who are you, and what did you do with my brother?"}
+    ]},
+    {"title": "The kitchen, three weeks later", "emoji": "🎧", "lines": [
+        {"who": "mom", "text": "You're up early again?"},
+        {"who": "adam", "text": "English podcast. Every morning, I listen and repeat. And I finished an online course in customer service. Look, a certificate!"},
+        {"who": "mom", "text": "I'm proud of you, son."},
+        {"who": "adam", "text": "Mom, look! BlueLine has a new job ad. Same company. Same job."},
+        {"who": "mom", "text": "So what are you waiting for?"}
+    ]}
+  ],
+  "words": ["research", "goal", "practice", "record", "weird", "pause", "professional", "eye", "contact", "calm", "focus", "podcast", "course"],
+  "choice": [
+    {"q": "Sami says an interview is like…", "options": ["a movie", "a football match", "a wedding"], "answer": 1},
+    {"q": "Step one is…", "options": ["research", "sleep", "buy a suit"], "answer": 0},
+    {"q": "Why should Adam record himself?", "options": ["to send it to Nadia", "to hear his mistakes", "to make a video for fun"], "answer": 1},
+    {"q": "Who plays the interviewer?", "options": ["Sami", "Lina", "Dad"], "answer": 1},
+    {"q": "What does Adam do every morning?", "options": ["listens to an English podcast and repeats", "plays football", "watches TV"], "answer": 0}
+  ],
+  "questions": [
+    {"q": "Why does Sami compare an interview to a football match?", "a": "Because you can't win without training."},
+    {"q": "What are Sami's four steps?", "a": "Research, practice, listen, and be professional."},
+    {"q": "Why does Sami tell Adam to record himself?", "a": "To hear every \"um\" and every \"like\" and fix them."},
+    {"q": "How does Lina help Adam practice?", "a": "She plays the interviewer and asks him questions."},
+    {"q": "What does Adam do every morning?", "a": "He listens to an English podcast and repeats."},
+    {"q": "Answer \"Tell me about yourself\" in English. How do you feel when you hear yourself?", "a": "Example: I feel a little shy, but I'm happy because I'm speaking English.", "personal": true}
+  ]
+}

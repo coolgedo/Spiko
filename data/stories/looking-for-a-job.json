@@ -1,0 +1,55 @@
+{
+  "id": "looking-for-a-job",
+  "number": 2,
+  "title": "Looking for a Job",
+  "cover": "🔎",
+  "scenes": [
+    {"title": "Adam's room, morning", "emoji": "💻", "sound": "keyboard typing", "lines": [
+        {"who": "adam", "text": "Accountant… two years of experience. Sales… three years of experience. Seriously? How can I get experience if nobody gives me a job?"},
+        {"who": "lina", "text": "Can I come in? You've been in front of that laptop for five hours."},
+        {"who": "adam", "text": "I'm looking for a job, Lina. And all these ads want experience and excellent English."},
+        {"who": "lina", "text": "Let me see… \"Customer Service Agents. Full-time. Good salary. Training provided. Fresh graduates are welcome.\" Fresh graduates! That's you!"},
+        {"who": "adam", "text": "A call center? Hmm… Sami works in a call center."},
+        {"who": "lina", "text": "So call him!"}
+    ]},
+    {"title": "Phone call", "emoji": "📞", "sound": "phone ringing", "lines": [
+        {"who": "sami", "text": "Hello? Adam! What's up, graduate?"},
+        {"who": "adam", "text": "Sami, I found a job ad for a call center. Is the job difficult?"},
+        {"who": "sami", "text": "Not really. You talk to customers on the phone and help them solve problems. But the most important thing is your English. You need to listen well and speak clearly."},
+        {"who": "adam", "text": "My English is… OK. I think."},
+        {"who": "sami", "text": "Just apply. What can you lose?"}
+    ]},
+    {"title": "Adam's room", "emoji": "📄", "lines": [
+        {"who": "adam", "text": "Name: Adam Fares. Degree: Bachelor of Commerce. Skills: computers, teamwork… Experience… nothing."},
+        {"who": "lina", "text": "Write about your university project! And the summer you helped Uncle in his shop."},
+        {"who": "adam", "text": "You're right. OK… upload my CV… and… Apply. Done!"}
+    ]},
+    {"title": "Three days later", "emoji": "📱", "sound": "phone ringing", "lines": [
+        {"who": "woman", "text": "Hello, is this Adam Fares?"},
+        {"who": "adam", "text": "Yes, speaking."},
+        {"who": "woman", "text": "I'm calling from the HR department at BlueLine Communications. We'd like to invite you for an interview next Sunday at ten a.m."},
+        {"who": "adam", "text": "Really? Yes! Of course! Thank you!"},
+        {"who": "woman", "text": "You're welcome. See you on Sunday."},
+        {"who": "lina", "text": "Well? Well?"},
+        {"who": "adam", "text": "I have an interview!"},
+        {"who": "lina", "text": "Yes! Wait… are you ready?"},
+        {"who": "adam", "text": "…I have no idea."}
+    ]}
+  ],
+  "words": ["experience", "ad", "customer", "service", "salary", "training", "solve", "apply", "skill", "upload", "department", "interview"],
+  "choice": [
+    {"q": "What do most job ads want?", "options": ["experience and excellent English", "a car", "a big family"], "answer": 0},
+    {"q": "What job does Lina find?", "options": ["teacher", "customer service agent", "doctor"], "answer": 1},
+    {"q": "Who works in a call center?", "options": ["Lina", "Dad", "Sami"], "answer": 2},
+    {"q": "\"Apply\" means…", "options": ["buy something", "ask for a job in an official way", "clean your room"], "answer": 1},
+    {"q": "When is the interview?", "options": ["Friday", "next Sunday", "tomorrow"], "answer": 1}
+  ],
+  "questions": [
+    {"q": "What do most of the job ads want?", "a": "They want experience and excellent English."},
+    {"q": "How does Lina help Adam?", "a": "She finds a job ad for fresh graduates and helps him with his CV."},
+    {"q": "What does Sami say is the most important thing in a call center?", "a": "English. You need to listen well and speak clearly."},
+    {"q": "What does Adam write in the experience part of his CV?", "a": "His university project and the summer he helped his uncle in his shop."},
+    {"q": "Who calls Adam three days later, and why?", "a": "A woman from the HR department. She invites him for an interview."},
+    {"q": "What kind of job do you want? Why?", "a": "Example: I want to work in a bank because I like numbers.", "personal": true}
+  ]
+}

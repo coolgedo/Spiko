@@ -1,0 +1,16 @@
+{
+  "_about": "Shared by all stories. color: blue | orange | green | pink | navy | purple | grey. gender + slot pick a different voice per character (slot = which male/female voice).",
+  "adam":         { "name": "Adam",         "color": "blue",   "gender": "male",   "slot": 0, "main": true },
+  "sami":         { "name": "Sami",         "color": "green",  "gender": "male",   "slot": 1 },
+  "dad":          { "name": "Dad",          "color": "navy",   "gender": "male",   "slot": 2 },
+  "uncle":        { "name": "Uncle",        "color": "grey",   "gender": "male",   "slot": 3 },
+  "driver":       { "name": "Driver",       "color": "grey",   "gender": "male",   "slot": 4 },
+  "speaker":      { "name": "Speaker",      "color": "grey",   "gender": "male",   "slot": 5 },
+  "candidate":    { "name": "Candidate",    "color": "grey",   "gender": "male",   "slot": 6 },
+  "lina":         { "name": "Lina",         "color": "orange", "gender": "female", "slot": 0 },
+  "mom":          { "name": "Mom",          "color": "pink",   "gender": "female", "slot": 1 },
+  "nadia":        { "name": "Nadia",        "color": "purple", "gender": "female", "slot": 2 },
+  "woman":        { "name": "Woman",        "color": "grey",   "gender": "female", "slot": 3 },
+  "receptionist": { "name": "Receptionist", "color": "grey",   "gender": "female", "slot": 4 },
+  "everyone":     { "name": "Everyone",     "color": "grey",   "gender": "group",  "slot": 0 }
+}

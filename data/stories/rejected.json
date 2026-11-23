@@ -1,0 +1,48 @@
+{
+  "id": "rejected",
+  "number": 4,
+  "title": "Rejected",
+  "cover": "📧",
+  "scenes": [
+    {"title": "The living room, one week later", "emoji": "🛋️", "lines": [
+        {"who": "lina", "text": "You checked your phone forty times today."},
+        {"who": "adam", "text": "They said they will contact me."},
+        {"who": "lina", "text": "Maybe they're busy."},
+        {"who": "adam", "note": "email notification", "text": "An email! From BlueLine!"},
+        {"who": "adam", "text": "\"Dear Adam, thank you for your interest in the Customer Service Agent position. Unfortunately, we have decided to move forward with other candidates. We wish you the best of luck.\""},
+        {"who": "lina", "text": "Oh, Adam… I'm sorry."},
+        {"who": "adam", "text": "I don't want to talk about it."}
+    ]},
+    {"title": "Adam's room, night", "emoji": "🌙", "sound": "knock on the door", "lines": [
+        {"who": "mom", "text": "Adam? You didn't eat dinner. Can I come in?"},
+        {"who": "adam", "text": "They rejected me, Mom. Everyone will know I failed. My uncle, the neighbors… everyone."},
+        {"who": "mom", "text": "Listen to me. When one door closes, another door opens. This is not the end. It's only the beginning."}
+    ]},
+    {"title": "Phone call", "emoji": "📞", "sound": "phone ringing", "lines": [
+        {"who": "sami", "text": "Hey! How was the interview?"},
+        {"who": "adam", "text": "A disaster. I was late, I wore jeans, I said \"um\" a hundred times, and I answered the wrong question."},
+        {"who": "sami", "text": "The wrong question?"},
+        {"who": "adam", "text": "She asked about stress. I talked about teamwork."},
+        {"who": "sami", "text": "OK… that's bad. But listen, my first two interviews were a disaster too. Rejection is normal. The problem isn't you. The problem is you weren't prepared."},
+        {"who": "adam", "text": "Prepared? How?"},
+        {"who": "sami", "text": "Meet me tomorrow at the café at six. I'll show you."},
+        {"who": "adam", "text": "…OK. Thanks, Sami."}
+    ]}
+  ],
+  "words": ["interest", "position", "unfortunately", "candidate", "luck", "reject", "fail", "disaster", "rejection", "prepared"],
+  "choice": [
+    {"q": "How does Adam get the news?", "options": ["a phone call", "an email", "a letter"], "answer": 1},
+    {"q": "\"Unfortunately\" comes before…", "options": ["good news", "bad news", "a question"], "answer": 1},
+    {"q": "What does Mom say?", "options": ["\"When one door closes, another door opens.\"", "\"Go to sleep.\"", "\"Call your uncle.\""], "answer": 0},
+    {"q": "What does Sami say about his first interviews?", "options": ["they were easy", "they were a disaster too", "he never had interviews"], "answer": 1},
+    {"q": "Where will Adam meet Sami?", "options": ["at the university", "at the café", "at BlueLine"], "answer": 1}
+  ],
+  "questions": [
+    {"q": "What does the email from BlueLine say?", "a": "It says they decided to move forward with other candidates."},
+    {"q": "Why is Adam worried about his uncle and the neighbors?", "a": "Because he thinks everyone will know he failed."},
+    {"q": "What does Mom tell Adam?", "a": "She says, \"When one door closes, another door opens. This is not the end.\""},
+    {"q": "What four mistakes did Adam make in the interview?", "a": "He was late, he wore jeans, he said \"um\" a lot, and he answered the wrong question."},
+    {"q": "What does Sami say is Adam's real problem?", "a": "He wasn't prepared."},
+    {"q": "Tell me about a time something didn't go well for you. What did you learn?", "a": "Example: I failed my driving test the first time. I learned to practice more.", "personal": true}
+  ]
+}

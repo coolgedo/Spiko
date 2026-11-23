@@ -1,0 +1,52 @@
+{
+  "id": "the-second-interview",
+  "number": 6,
+  "title": "The Second Interview",
+  "cover": "👔",
+  "scenes": [
+    {"title": "Adam's room, the night before", "emoji": "👔", "lines": [
+        {"who": "adam", "text": "Suit: ironed. CV: printed. Traffic: checked. Alarm: two alarms."},
+        {"who": "lina", "text": "You look like a soldier before a battle."},
+        {"who": "adam", "text": "That's exactly how I feel."}
+    ]},
+    {"title": "Reception, 9:45 a.m.", "emoji": "🏢", "lines": [
+        {"who": "receptionist", "text": "Good morning. You're early!"},
+        {"who": "adam", "text": "Good morning. I'm Adam Fares. I have an interview at ten with Ms. Nadia."}
+    ]},
+    {"title": "Nadia's office", "emoji": "💼", "lines": [
+        {"who": "nadia", "text": "Adam? I remember you."},
+        {"who": "adam", "text": "Good morning, Ms. Nadia. Thank you for giving me a second chance."},
+        {"who": "nadia", "text": "So, tell me about yourself."},
+        {"who": "adam", "text": "I'm a commerce graduate from Cairo University. I enjoy helping people and solving problems. Recently, I finished a course in customer service, and I practice my English every day. I believe this job is a great opportunity for me to grow."},
+        {"who": "nadia", "text": "Why do you want to work with us?"},
+        {"who": "adam", "text": "BlueLine helps thousands of customers every day, and you're known for great service. I want to be part of a team that makes customers happy."},
+        {"who": "nadia", "text": "How do you handle stress?"},
+        {"who": "adam", "text": "That's a good question. When I feel stressed, I take a deep breath and focus on one problem at a time. For example, during my final exams, I made a study plan, and it helped me a lot."},
+        {"who": "nadia", "text": "Adam, you're a different person from last time. What happened?"},
+        {"who": "adam", "text": "I learned from my mistakes."}
+    ]},
+    {"title": "Home, evening", "emoji": "✉️", "sound": "keyboard typing", "lines": [
+        {"who": "adam", "text": "\"Dear Ms. Nadia, thank you for your time today. I really enjoyed our conversation, and I am very interested in this position. Best regards, Adam Fares.\" Send."},
+        {"who": "lina", "text": "A thank-you email? Fancy!"},
+        {"who": "adam", "text": "Sami says it makes a good impression."},
+        {"who": "lina", "text": "So now what?"},
+        {"who": "adam", "text": "Now… we wait."}
+    ]}
+  ],
+  "words": ["iron", "print", "soldier", "battle", "chance", "recently", "opportunity", "grow", "deep", "breath", "plan", "impression", "regards"],
+  "choice": [
+    {"q": "When does Adam arrive this time?", "options": ["early", "late", "he doesn't go"], "answer": 0},
+    {"q": "What does Lina say he looks like?", "options": ["a teacher", "a soldier before a battle", "a football player"], "answer": 1},
+    {"q": "How does Adam handle stress?", "options": ["he takes a deep breath and focuses on one problem", "he goes to sleep", "he calls Sami"], "answer": 0},
+    {"q": "\"Opportunity\" means…", "options": ["a problem", "a good chance", "a long trip"], "answer": 1},
+    {"q": "What does Adam send in the evening?", "options": ["a gift", "a thank-you email", "his CV again"], "answer": 1}
+  ],
+  "questions": [
+    {"q": "What does Adam prepare the night before the interview?", "a": "He irons his suit, prints his CV, checks the traffic, and sets two alarms."},
+    {"q": "Why does Lina say he looks like a soldier?", "a": "Because he is very serious and ready, like a soldier before a battle."},
+    {"q": "How is Adam's answer about stress different this time?", "a": "He listens to the question, stays calm, and gives an example."},
+    {"q": "Why does Nadia say Adam is \"a different person\"?", "a": "Because he is prepared, calm, and confident this time."},
+    {"q": "Why does Adam send a thank-you email?", "a": "Because it makes a good impression."},
+    {"q": "Why do you want your dream job? Answer like you are in an interview.", "a": "Example: I want to be a nurse because I enjoy helping people, and I believe it is a great opportunity to grow.", "personal": true}
+  ]
+}
