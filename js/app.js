@@ -39,9 +39,14 @@ function route() {
   const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean).map(decodeURIComponent);
   window.scrollTo(0, 0);
   if (parts[0] === "words") return renderWords();
+  if (parts[0] === "section") {
+    const sec = sectionById(parts[1]);
+    return sec && sec.open ? renderSection(sec) : renderHome();
+  }
   if (parts[0] === "topic") {
     const sec = sectionById(parts[1]);
-    return sec ? renderTopic(sec) : renderHome();
+    const topic = topicById(sec, parts[2]);
+    return topic ? renderTopic(sec, topic) : (sec ? renderSection(sec) : renderHome());
   }
   if (parts[0] === "story") {
     const story = storyById(parts[1]);
@@ -59,14 +64,19 @@ function route() {
 }
 
 /* =====================================================================
-   Home: topic covers
+   Navigation: Home (section covers) → Section (topic cards) → Topic (stories)
    ===================================================================== */
-function sectionStats(sec) {
-  const total = sec.total || sec.loaded.length;
-  const done = sec.loaded.filter((s) => Progress.get(s.id).done).length;
-  const pct = sec.loaded.reduce((a, s) => a + Progress.percent(s.id), 0) / Math.max(total, 1);
+function topicById(sec, id) { return sec && sec.topics.find((t) => t.id === id); }
+function slotsOf(sec) { return sec.topics.flatMap((t) => t.slots); }
+
+/** Progress for a list of story slots → { total, done, pct } */
+function slotStats(slots) {
+  const total = slots.length;
+  const done = slots.filter((s) => s.story && Progress.get(s.story.id).done).length;
+  const pct = slots.reduce((a, s) => a + (s.story ? Progress.percent(s.story.id) : 0), 0) / Math.max(total, 1);
   return { total, done, pct };
 }
+function sectionStats(sec) { return slotStats(slotsOf(sec)); }
 
 function progressBar(pct, cls = "") {
   return `<div class="progress ${cls}"><span style="width:${Math.round(pct * 100)}%"></span></div>`;
@@ -92,53 +102,41 @@ function renderHome() {
     <a class="continue-card" href="#/story/${esc(next.id)}">
       <span class="cc-cover">${esc(next.cover || "📖")}</span>
       <span class="cc-body">
-        <small>${Progress.get(next.id).done ? "Done ✓ · Listen again" : Progress.percent(next.id) > 0 ? "Continue" : "Start here"} · ${esc(next.section)}</small>
+        <small>${Progress.get(next.id).done ? "Done ✓ · Listen again" : Progress.percent(next.id) > 0 ? "Continue" : "Start here"} · ${esc(next.topic)}</small>
         <b>${esc(next.title)}</b>
         ${progressBar(Progress.percent(next.id), "thin")}
       </span>
       <span class="cc-go">${ICON.play}</span>
     </a>` : ""}
 
-    <h2 class="h2">Topics</h2>
+    <h2 class="h2">Choose your world</h2>
     <div class="covers">
       ${SECTIONS.map((sec, i) => {
         const st = sectionStats(sec);
-        return `
-        <a class="cover cover-${esc(sec.color || ["blue", "navy", "orange", "light"][i % 4])}" href="#/topic/${esc(sec.id)}" style="animation-delay:${i * 0.07}s">
+        const inner = `
           <span class="cover-emoji">${esc(sec.cover || "📚")}</span>
           <span class="cover-title">${esc(sec.title)}</span>
           ${sec.titleAr ? `<span class="cover-ar" lang="ar" dir="rtl">${esc(sec.titleAr)}</span>` : ""}
-          <span class="cover-meta">${st.done} / ${st.total} stories</span>
-          ${progressBar(st.pct, "thin")}
-        </a>`;
+          ${sec.open
+            ? `<span class="cover-meta">${st.done} / ${st.total} stories</span>${progressBar(st.pct, "thin")}`
+            : `<span class="soon-badge" lang="ar">قريبًا</span>`}`;
+        const cls = `cover cover-${esc(sec.color || "blue")}${i === 0 ? " cover-wide" : ""}${sec.open ? "" : " locked"}`;
+        return sec.open
+          ? `<a class="${cls}" href="#/section/${esc(sec.id)}" style="animation-delay:${i * 0.06}s">${inner}</a>`
+          : `<button class="${cls}" type="button" data-locked="${esc(sec.title)}" style="animation-delay:${i * 0.06}s" aria-disabled="true">${inner}</button>`;
       }).join("")}
     </div>`;
+
+  app().onclick = (e) => {
+    const l = e.target.closest("[data-locked]");
+    if (l) toast(`${l.dataset.locked} — قريبًا 🚀`);
+  };
 }
 
-/* =====================================================================
-   Topic: story list with progress
-   ===================================================================== */
-function renderTopic(sec) {
+function renderSection(sec) {
   const st = sectionStats(sec);
-  const rows = [];
-  for (let n = 1; n <= st.total; n++) {
-    const story = sec.loaded.find((s) => s.number === n);
-    if (!story) {
-      rows.push(`<li><div class="story-row soon"><span class="sr-num">${n}</span><span class="sr-cover">🔒</span>
-        <span class="sr-body"><b>Story ${n}</b><small>Coming soon</small></span></div></li>`);
-      continue;
-    }
-    const p = Progress.get(story.id);
-    const pct = Progress.percent(story.id);
-    const status = p.done ? "Done" : pct > 0 ? `${Math.round(pct * 100)}%` : "New";
-    rows.push(`<li><a class="story-row${p.done ? " done" : ""}" href="#/story/${esc(story.id)}">
-      <span class="sr-num">${p.done ? ICON.check : n}</span>
-      <span class="sr-cover">${esc(story.cover || "📖")}</span>
-      <span class="sr-body"><b>${esc(story.title)}</b>${progressBar(pct, "thin")}</span>
-      <span class="sr-status">${status}</span></a></li>`);
-  }
   app().innerHTML = `
-    <a href="#/" class="back-link">${ICON.back}Topics</a>
+    <a href="#/" class="back-link">${ICON.back}Home</a>
     <header class="topic-head cover-${esc(sec.color || "blue")}">
       <span class="cover-emoji">${esc(sec.cover || "📚")}</span>
       <div>
@@ -148,7 +146,60 @@ function renderTopic(sec) {
       </div>
     </header>
     ${progressBar(st.pct)}
-    <ol class="story-list">${rows.join("")}</ol>`;
+    <h2 class="h2">Topics</h2>
+    <div class="topic-grid">
+      ${sec.topics.map((t, i) => {
+        const ts = slotStats(t.slots);
+        const nums = t.slots.map((s) => s.number);
+        const range = nums.length > 1 ? `Stories ${nums[0]}–${nums[nums.length - 1]}` : `Story ${nums[0]}`;
+        return `<a class="topic-card${ts.done === ts.total && ts.total ? " complete" : ""}" href="#/topic/${esc(sec.id)}/${esc(t.id)}" style="animation-delay:${i * 0.06}s">
+          <span class="tc-cover">${esc(t.cover || "📖")}</span>
+          <span class="tc-title">${esc(t.title)}</span>
+          <span class="tc-ar" lang="ar" dir="rtl">${esc(t.titleAr || "")}</span>
+          <span class="tc-meta">${range} · ${ts.total} ${ts.total === 1 ? "story" : "stories"}</span>
+          <span class="tc-done">${ts.done === ts.total && ts.total ? "✓ Completed" : `${ts.done} / ${ts.total} completed`}</span>
+          ${progressBar(ts.pct, "thin")}
+        </a>`;
+      }).join("")}
+    </div>`;
+}
+
+function renderTopic(sec, topic) {
+  const ts = slotStats(topic.slots);
+  const rows = topic.slots.map((slot) => {
+    const story = slot.story;
+    if (!story) {
+      return `<li><button class="story-row soon" type="button" data-soon="${slot.number}">
+        <span class="sr-num">${slot.number}</span><span class="sr-cover">🔒</span>
+        <span class="sr-body"><b>Story ${slot.number}</b><small>Coming soon · <span lang="ar">قريبًا</span></small></span></button></li>`;
+    }
+    const p = Progress.get(story.id);
+    const pct = Progress.percent(story.id);
+    const status = p.done ? "✓" : pct > 0 ? `${Math.round(pct * 100)}%` : "New";
+    return `<li><a class="story-row${p.done ? " done" : ""}" href="#/story/${esc(story.id)}">
+      <span class="sr-num">${p.done ? ICON.check : slot.number}</span>
+      <span class="sr-cover">${esc(story.cover || "📖")}</span>
+      <span class="sr-body"><small>Story ${slot.number}</small><b>${esc(story.title)}</b>${progressBar(pct, "thin")}</span>
+      <span class="sr-status">${status}</span></a></li>`;
+  }).join("");
+
+  app().innerHTML = `
+    <a href="#/section/${esc(sec.id)}" class="back-link">${ICON.back}${esc(sec.title)}</a>
+    <header class="topic-head cover-light">
+      <span class="cover-emoji">${esc(topic.cover || "📖")}</span>
+      <div>
+        <h1>${esc(topic.title)}</h1>
+        ${topic.titleAr ? `<p lang="ar" dir="rtl">${esc(topic.titleAr)}</p>` : ""}
+        <small>${ts.done} of ${ts.total} completed</small>
+      </div>
+    </header>
+    ${progressBar(ts.pct)}
+    <ol class="story-list">${rows}</ol>`;
+
+  app().onclick = (e) => {
+    const s = e.target.closest("[data-soon]");
+    if (s) toast(`Story ${s.dataset.soon} is coming soon 🚀`);
+  };
 }
 
 /* =====================================================================
@@ -168,18 +219,28 @@ async function boot() {
     FORMS = (dict && dict._forms) || {};
     DICT = dict || {};
     SECTIONS = sec.sections || [];
-    // Load every story listed in sections.json → data/stories/<id>.json (in order)
-    await Promise.all(SECTIONS.map(async (section) => {
-      const list = await Promise.all((section.stories || []).map((id, i) =>
-        loadJSON(`data/stories/${id}.json`)
-          .then((story) => ({
-            ...story, id: story.id || id, number: story.number || i + 1,
-            section: section.title, sectionId: section.id, sectionTotal: section.total || section.stories.length
-          }))
-          .catch(() => null)));
-      section.loaded = list.filter(Boolean);
-    }));
-    STORIES = SECTIONS.flatMap((s) => s.loaded);
+    // sections → topics → story slots. A slot with an "id" loads data/stories/<id>.json;
+    // a slot without one (or whose file is missing) shows as "Coming soon".
+    const jobs = [];
+    SECTIONS.forEach((section) => {
+      section.topics = section.topics || [];
+      section.total = section.topics.reduce((n, t) => n + (t.stories || []).length, 0);
+      section.topics.forEach((topic) => {
+        topic.slots = (topic.stories || []).map((slot) => ({ ...slot, story: null }));
+        topic.slots.forEach((slot) => {
+          if (!slot.id) return;
+          jobs.push(loadJSON(`data/stories/${slot.id}.json`).then((story) => {
+            slot.story = {
+              ...story, id: story.id || slot.id, number: slot.number || story.number,
+              section: section.title, sectionId: section.id, sectionTotal: section.total,
+              topic: topic.title, topicAr: topic.titleAr, topicId: topic.id
+            };
+          }).catch(() => { /* file missing → Coming soon */ }));
+        });
+      });
+    });
+    await Promise.all(jobs);
+    STORIES = SECTIONS.flatMap((sec) => sec.topics.flatMap((t) => t.slots.map((sl) => sl.story).filter(Boolean)));
   } catch (e) {
     show("app-shell");
     app().innerHTML = `<p class="empty">Couldn't load the stories.<br/>If you opened the file directly, run a local server (see README).</p>`;
@@ -242,11 +303,10 @@ function renderStory(story) {
       ${sc.title ? `<div class="scene-head"><span class="scene-place">${esc(sc.place || "🎬")}</span><span>Scene ${si + 1} · ${esc(sc.title)}</span></div>` : ""}
       ${sc.lines.map((l) => lineHTML(story, l, n++)).join("")}
     </section>`).join("");
-  const sec = sectionById(story.sectionId);
   const speed = store.get(KEY_SPEED, "normal");
 
   app().innerHTML = `
-    <a href="#/topic/${esc(story.sectionId)}" class="back-link">${ICON.back}${esc(story.section)}</a>
+    <a href="#/topic/${esc(story.sectionId)}/${esc(story.topicId)}" class="back-link">${ICON.back}${esc(story.topic)}</a>
     <div class="story-hero">
       <span class="story-cover">${esc(story.cover || "📖")}</span>
       <div>
@@ -712,12 +772,11 @@ function renderQuestions(story) {
    ===================================================================== */
 function nextStoryAfter(story) {
   const sec = sectionById(story.sectionId);
-  const inSection = sec.loaded.filter((s) => s.number > story.number).sort((a, b) => a.number - b.number)[0];
-  if (inSection) return { story: inSection };
-  if (story.number < (sec.total || 0)) return { soon: story.number + 1 };        // next one not written yet
-  const nextSec = SECTIONS[SECTIONS.indexOf(sec) + 1];
-  if (nextSec && nextSec.loaded[0]) return { story: nextSec.loaded[0] };
-  return { soon: null };
+  const slot = slotsOf(sec).filter((sl) => sl.number > story.number).sort((x, y) => x.number - y.number)[0];
+  if (slot) return slot.story ? { story: slot.story } : { soon: slot.number };
+  const nextSec = SECTIONS.slice(SECTIONS.indexOf(sec) + 1).find((x) => x.open && x.topics.some((t) => t.slots.some((sl) => sl.story)));
+  const first = nextSec && slotsOf(nextSec).find((sl) => sl.story);
+  return first ? { story: first.story } : { soon: null };
 }
 
 function confetti() {
@@ -738,10 +797,11 @@ function renderDone(story) {
 
   app().innerHTML = `
     ${confetti()}
+    <a href="#/topic/${esc(story.sectionId)}/${esc(story.topicId)}" class="back-link">${ICON.back}${esc(story.topic)}</a>
     <div class="done">
       <svg class="done-logo" aria-hidden="true"><use href="#spiko-logo"/></svg>
       <h1>Story complete!</h1>
-      <p class="sub">${esc(story.title)} · ${esc(story.section)}</p>
+      <p class="sub">${esc(story.title)} · ${esc(story.topic)}</p>
       <div class="stats">
         <div class="stat"><b>${choice}</b>correct<br/>answers</div>
         <div class="stat"><b>${spoken}</b>questions<br/>spoken</div>
@@ -758,7 +818,7 @@ function renderDone(story) {
           : `<button id="next-soon" class="btn btn-orange btn-big btn-block" type="button">Next story <span class="soon">Coming soon</span></button>`}
         <div class="row2">
           <a class="btn btn-ghost" href="#/words">My words</a>
-          <a class="btn btn-outline" href="#/topic/${esc(story.sectionId)}">All stories</a>
+          <a class="btn btn-outline" href="#/topic/${esc(story.sectionId)}/${esc(story.topicId)}">${esc(story.topic)}</a>
         </div>
         <a class="btn btn-outline btn-block" href="#/story/${esc(story.id)}">Listen again</a>
       </div>

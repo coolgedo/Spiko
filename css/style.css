@@ -524,3 +524,37 @@ a { color: var(--blue); }
 .word-item.active { border-color: var(--orange); background: #FFF8EC; }
 .wi-meta { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: .88rem; }
 .wi-story { background: var(--light); color: var(--blue); border-radius: 999px; padding: 0 8px; }
+
+/* ---------- Navigation v2: section covers, locked sections, topic cards ---------- */
+button.cover { border: 0; text-align: left; font: inherit; width: 100%; cursor: pointer; }
+.cover-wide { grid-column: 1 / -1; min-height: 210px; }
+.cover-wide .cover-emoji { font-size: 4rem; }
+.cover-wide .cover-title { font-size: 1.6rem; }
+.cover.locked { filter: grayscale(1); opacity: .5; box-shadow: none; }
+.cover.locked .cover-emoji { opacity: .8; }
+.soon-badge {
+  align-self: flex-start; margin-top: 8px; padding: 2px 12px; border-radius: 999px;
+  background: var(--navy); color: #fff; font-size: .9rem; font-weight: 800;
+}
+.topic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.topic-card {
+  display: flex; flex-direction: column; gap: 1px;
+  padding: 14px; border-radius: 22px; text-decoration: none; color: var(--navy);
+  background: #fff; border: 2px solid var(--line); box-shadow: var(--shadow);
+  animation: fadeUp .45s ease both;
+}
+.topic-card:active { transform: scale(.98); }
+.topic-card.complete { border-color: var(--blue); }
+.tc-cover {
+  width: 64px; height: 64px; border-radius: 18px; background: var(--light);
+  display: grid; place-items: center; font-size: 2.3rem; margin-bottom: 8px;
+}
+.tc-title { font-weight: 800; font-size: 1.15rem; line-height: 1.15; }
+.tc-ar { color: var(--muted); font-size: .95rem; text-align: left; }
+.tc-meta { color: var(--muted); font-size: .8rem; margin-top: 6px; }
+.tc-done { color: var(--blue); font-size: .85rem; font-weight: 800; }
+.topic-card .progress { margin-top: 6px; }
+button.story-row { width: 100%; font: inherit; text-align: left; cursor: pointer; }
+.sr-body small { font-size: .78rem; }
+.story-row.done .sr-status { color: var(--blue); font-size: 1.2rem; }
+.story-row.done { text-align: left; }
