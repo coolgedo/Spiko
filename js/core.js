@@ -381,12 +381,20 @@ function baseForms(word) {
   return out;
 }
 
-/** → { base, meaning } from our dictionary, or null */
+/**
+ * → { base, meaning, ex, emoji } from data/dictionary.json, or null.
+ * Entries are { def, ex, emoji? } (a plain string also works as the definition).
+ */
 function lookupWord(word) {
   const has = (k) => Object.prototype.hasOwnProperty.call(DICT, k) && k[0] !== "_";
+  const pack = (k) => {
+    const e = DICT[k];
+    return typeof e === "string" ? { base: k, meaning: e } : { base: k, meaning: e.def, ex: e.ex, emoji: e.emoji };
+  };
   const lower = word.toLowerCase().replace(/[’]/g, "'");
-  if (has(lower)) return { base: lower, meaning: DICT[lower] };      // "it's", "can't" as entries
-  for (const b of baseForms(lower)) if (has(b)) return { base: b, meaning: DICT[b] };
+  if (has(lower)) return pack(lower);                    // also "it's", "can't", "a.m." as entries
+  if (FORMS[lower] && has(FORMS[lower])) return pack(FORMS[lower]);
+  for (const b of baseForms(lower)) if (has(b)) return pack(b);
   return null;
 }
 

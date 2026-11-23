@@ -595,3 +595,7 @@ button.story-row { width: 100%; font: inherit; text-align: left; cursor: pointer
   text-align: center; font-size: .85rem; font-weight: 800; color: var(--who);
 }
 .story-body.locked .line.say.me .bubble::after { color: #fff; }
+.sheet-emoji { font-size: 2.2rem; line-height: 1; }
+.sheet-emoji:empty { display: none; }
+.sheet-ex { margin: -8px 0 16px; padding: 10px 12px; border-radius: 14px; background: var(--light); font-size: 1.05rem; }
+.sheet-ex small { display: block; color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; }

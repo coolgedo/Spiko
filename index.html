@@ -68,6 +68,7 @@
     <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheet-word">
       <button class="sheet-x" type="button" data-close aria-label="Close">×</button>
       <div class="sheet-head">
+        <span id="sheet-emoji" class="sheet-emoji" aria-hidden="true"></span>
         <h2 id="sheet-word" class="sheet-word"></h2>
         <button id="sheet-say" class="icon-btn" type="button" aria-label="Hear the word">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>
@@ -75,6 +76,7 @@
       </div>
       <p id="sheet-meta" class="sheet-meta"></p>
       <p id="sheet-meaning" class="sheet-meaning"></p>
+      <p id="sheet-ex" class="sheet-ex" hidden></p>
       <div class="sheet-actions">
         <a id="sheet-more" class="btn btn-ghost" target="_blank" rel="noopener">More ↗</a>
         <button id="sheet-save" class="btn btn-primary" type="button">Save</button>

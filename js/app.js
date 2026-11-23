@@ -445,7 +445,11 @@ async function openWord(raw, story) {
   let meaning = "";
 
   $("#sheet-word").textContent = word;
-  $("#sheet-more").href = "https://www.oxfordlearnersdictionaries.com/definition/english/" + encodeURIComponent(word.replace(/'/g, ""));
+  $("#sheet-emoji").textContent = (key && key.emoji) || "";
+  const exEl = $("#sheet-ex");
+  exEl.hidden = !(key && key.ex);
+  exEl.innerHTML = key && key.ex ? `<small>Example</small>${esc(key.ex)}` : "";
+  $("#sheet-more").href = "https://www.oxfordlearnersdictionaries.com/definition/english/" + encodeURIComponent(word.split("'")[0].replace(/\./g, ""));
   const from = key && key.base !== lower ? `from “${raw}” · ` : "";
   metaEl.textContent = key ? from + (key.key ? "Key word ⭐" : "Spiko dictionary") : "";
   sheet.hidden = false;
@@ -458,10 +462,10 @@ async function openWord(raw, story) {
   setSave();
   saveBtn.onclick = () => {
     if (Words.has(word)) { Words.remove(word); toast("Removed from My words"); }
-    else { Words.add({ word, meaning, story: story.id, date: Date.now() }); toast("Saved to My words ⭐"); }
+    else { Words.add({ word, meaning, ex: key && key.ex, emoji: key && key.emoji, story: story.id, date: Date.now() }); toast("Saved to My words ⭐"); }
     setSave();
   };
-  $("#sheet-say").onclick = () => Voice.say(word);
+  $("#sheet-say").onclick = () => { Voice.say(word, () => { if (key && key.ex) Voice.say(key.ex); }); };
   Voice.say(word);
 
   if (key) {
