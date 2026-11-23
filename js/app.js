@@ -267,9 +267,12 @@ function lookupKeyWord(story, word) {
    Story view: scenes with chat bubbles, a voice per character,
    speed switch, listen first → then read, tappable words
    ===================================================================== */
+// Same word pattern as the dictionary builder: a.m./p.m./Mr./Ms., accented letters, contractions
+const WORD_RE = /(a\.m\.|p\.m\.|Mr\.|Ms\.|[A-Za-zÀ-ÿ]+(?:['’][A-Za-zÀ-ÿ]+)*)/;
+
 function tokenize(text, story) {
-  // Words become tappable spans; key words of the story are highlighted
-  return String(text).split(/([A-Za-z]+(?:['’][A-Za-z]+)*)/).map((part, i) => {
+  // Every word becomes a tappable span; the story's key words are highlighted
+  return String(text).split(WORD_RE).map((part, i) => {
     if (i % 2 === 0) return esc(part);
     const key = lookupKeyWord(story, part.toLowerCase());
     return `<span class="w${key && key.key ? " key" : ""}" data-w="${esc(part)}">${esc(part)}</span>`;
@@ -277,18 +280,18 @@ function tokenize(text, story) {
 }
 
 function charOf(story, who) {
-  const c = (story.characters || {})[who];
-  return c || { name: who === "narrator" ? "Narrator" : who, voice: who === "narrator" ? "narrator" : "male" };
+  return CHARS[who] || (story.characters || {})[who] || { name: who.charAt(0).toUpperCase() + who.slice(1), color: "grey", gender: "male", slot: 0 };
 }
 
 function lineHTML(story, line, i) {
   const c = charOf(story, line.who);
-  if (!line.who || line.who === "narrator") {
-    return `<p class="line narr" data-i="${i}"><span class="txt">${tokenize(line.text, story)}</span></p>`;
-  }
-  return `<div class="line say${c.main ? " me" : ""}" data-i="${i}">
-      <button class="avatar" type="button" data-replay="${i}" aria-label="Hear ${esc(c.name)}">${esc(c.avatar || "🙂")}</button>
-      <div class="bubble"><span class="who">${esc(c.name)}</span><span class="txt">${tokenize(line.text, story)}</span></div>
+  return `<div class="line say c-${esc(c.color || "grey")}${c.main ? " me" : ""}" data-i="${i}">
+      <button class="avatar" type="button" data-replay="${i}" aria-label="Hear ${esc(c.name)}">${esc(c.name.charAt(0))}</button>
+      <div class="bubble" data-bubble="${i}">
+        <span class="who">${esc(c.name)}</span>
+        ${line.note ? `<span class="note">(${esc(line.note)})</span>` : ""}
+        <span class="txt">${tokenize(line.text, story)}</span>
+      </div>
     </div>`;
 }
 
@@ -296,14 +299,18 @@ function renderStory(story) {
   const lines = linesOf(story);
   const items = lines.map((l, i) => ({
     text: l.text,
-    role: charOf(story, l.who).voice || "narrator",
+    character: charOf(story, l.who),
     audio: l.audio || (Array.isArray(story.audio) ? story.audio[i] : null)
   }));
   const scenes = story.scenes || [{ title: "", lines }];
   let n = 0;
   const scenesHTML = scenes.map((sc, si) => `
     <section class="scene">
-      ${sc.title ? `<div class="scene-head"><span class="scene-place">${esc(sc.place || "🎬")}</span><span>Scene ${si + 1} · ${esc(sc.title)}</span></div>` : ""}
+      <div class="scene-card">
+        <span class="scene-emoji">${esc(sc.emoji || sc.place || "🎬")}</span>
+        <span class="scene-info"><small>Scene ${si + 1}</small><b>${esc(sc.title || "")}</b>
+        ${sc.sound ? `<span class="scene-sound">🔊 ${esc(sc.sound)}</span>` : ""}</span>
+      </div>
       ${sc.lines.map((l) => lineHTML(story, l, n++)).join("")}
     </section>`).join("");
   const speed = store.get(KEY_SPEED, "normal");
@@ -320,10 +327,10 @@ function renderStory(story) {
 
     <div id="read-gate" class="read-gate">
       <span class="rg-ear">🎧</span>
-      <div class="rg-body"><b>Listen first</b><small>Press Listen and follow the voices. Then read.</small></div>
+      <div class="rg-body"><b>Listen first</b><small>Press Listen and follow the bubbles. Then tap Read.</small></div>
       <button id="btn-read" class="btn btn-primary" type="button">${ICON.book}<span>Read</span></button>
     </div>
-    <p id="tap-hint" class="tap-hint" hidden>Tap any word to see its meaning. Tap a face to hear the line again.</p>
+    <p id="tap-hint" class="tap-hint" hidden>Tap any word to see its meaning. Tap a bubble to hear it again.</p>
 
     <div id="story-body" class="story-body locked" lang="en">${scenesHTML}</div>
     <div id="story-cheer"></div>
@@ -398,9 +405,10 @@ function renderStory(story) {
   setUI();
 
   body.addEventListener("click", (e) => {
-    const rep = e.target.closest("[data-replay]");
-    if (rep) {                                     // hear one line again
-      const i = +rep.dataset.replay;
+    const w0 = state.revealed && e.target.closest(".w");
+    const rep = !w0 && (e.target.closest("[data-replay]") || e.target.closest("[data-bubble]"));
+    if (rep) {                                     // tap a bubble or avatar: hear that line again
+      const i = +(rep.dataset.replay || rep.dataset.bubble);
       state.playing = false;
       Voice.stop();
       setActive(i);

@@ -56,9 +56,9 @@ const FEMALE_RE = /female|samantha|karen|zira|jenny|aria|ava|allison|susan|seren
 const MALE_RE = /\bmale\b|daniel|alex|david|mark|guy|fred|tom|rishi|oliver|ryan|george|arthur|aaron|gordon|lee|thomas|christopher|eric|matthew|brian|william|james|google uk english male/;
 
 const SPEEDS = [
-  { id: "slow", label: "🐢 Slow", rate: 0.7 },
-  { id: "normal", label: "Normal", rate: 0.9 },
-  { id: "fast", label: "Fast", rate: 1.05 }
+  { id: "slow", label: "🐢 Slow", rate: 0.65 },
+  { id: "normal", label: "Normal", rate: 0.8 },
+  { id: "fast", label: "Fast", rate: 1.0 }
 ];
 
 const Voice = {
@@ -70,6 +70,26 @@ const Voice = {
   get rate() {
     const sp = SPEEDS.find((s) => s.id === store.get(KEY_SPEED, "normal")) || SPEEDS[1];
     return sp.rate;
+  },
+
+  /**
+   * Voice for a story character from data/characters.json: { gender: male|female|group, slot: n }.
+   * Each slot gets a different device voice of that gender; when the device has fewer
+   * voices than characters, the same voice is reused with a different pitch.
+   */
+  forCharacter(c) {
+    const g = c && c.gender;
+    const slot = (c && c.slot) || 0;
+    if (g !== "male" && g !== "female") return { voice: this.voice, pitch: 1 };
+    let pool = g === "female" ? this.females : this.males;
+    let base = 1;
+    if (!pool.length) {                       // no voice of that gender: any English voice, shifted pitch
+      pool = this.english.length ? this.english : [null];
+      base = g === "female" ? 1.2 : 0.85;
+    }
+    const round = Math.floor(slot / pool.length);
+    const PITCH = [1, 0.82, 1.15, 0.72, 1.25, 0.9, 1.08];
+    return { voice: pool[slot % pool.length] || this.voice, pitch: Math.min(2, Math.max(0.5, base * PITCH[round % PITCH.length])) };
   },
 
   init() {
@@ -158,7 +178,7 @@ const Voice = {
     if (item.audio) {                              // recorded voice file
       const a = new Audio(item.audio);
       this._audio = a;
-      a.playbackRate = item.lang === "ar" ? 1 : this.rate / 0.9;
+      a.playbackRate = item.lang === "ar" ? 1 : this.rate / 0.8;
       a.onended = () => done();
       a.onerror = () => done("audio-error");
       a.onplay = () => onStart && onStart();
@@ -167,7 +187,7 @@ const Voice = {
     }
     if (!("speechSynthesis" in window)) { setTimeout(() => done("unsupported"), 300); return; }
     const isAr = item.lang === "ar";
-    const prof = isAr ? { voice: this.arVoice, pitch: 1 } : this.forRole(item.role);
+    const prof = isAr ? { voice: this.arVoice, pitch: 1 } : item.character ? this.forCharacter(item.character) : this.forRole(item.role);
     let u;
     try {
       u = new SpeechSynthesisUtterance(String(item.text).replace(/["“”]/g, ""));

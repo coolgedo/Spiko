@@ -558,3 +558,40 @@ button.story-row { width: 100%; font: inherit; text-align: left; cursor: pointer
 .sr-body small { font-size: .78rem; }
 .story-row.done .sr-status { color: var(--blue); font-size: 1.2rem; }
 .story-row.done { text-align: left; }
+
+/* ---------- Story view v3: scene cards + coloured speakers ---------- */
+.c-blue   { --who: #1F4FD1; --who-bg: #E8EEFF; }
+.c-orange { --who: #E07F00; --who-bg: #FFF1DC; }
+.c-green  { --who: #1E8E5A; --who-bg: #E2F6EC; }
+.c-pink   { --who: #D6407F; --who-bg: #FDE6F0; }
+.c-navy   { --who: #0F1B3D; --who-bg: #E6E9F2; }
+.c-purple { --who: #7446D9; --who-bg: #EFE8FD; }
+.c-grey   { --who: #6B7489; --who-bg: #EEF0F4; }
+.scene-card {
+  display: flex; align-items: center; gap: 12px;
+  margin: 18px 0 12px; padding: 12px 14px; border-radius: 18px;
+  background: var(--navy); color: #fff;
+}
+.scene-emoji { font-size: 2rem; width: 48px; height: 48px; flex: none; display: grid; place-items: center; background: rgba(255,255,255,.1); border-radius: 14px; }
+.scene-info { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.scene-info small { color: var(--orange); font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; }
+.scene-info b { font-size: 1.15rem; font-weight: 800; }
+.scene-sound { font-size: .85rem; opacity: .75; font-style: italic; }
+.line.say .avatar {
+  background: var(--who); color: #fff; font-weight: 800; font-size: 1.1rem; width: 38px; height: 38px;
+}
+.line.say .bubble { background: var(--who-bg); cursor: pointer; }
+.line.say .who { color: var(--who); opacity: 1; }
+.line.say.me .bubble { background: var(--who); color: #fff; }
+.line.say.me .who { color: rgba(255,255,255,.8); }
+.bubble .note { display: block; font-size: .85rem; font-style: italic; opacity: .7; }
+.line.say.active .bubble { box-shadow: 0 0 0 3px var(--orange); transform: scale(1.02); }
+.line.say .bubble { transition: transform .2s, box-shadow .2s; }
+/* Listen first: bubble text hidden */
+.story-body.locked .txt { filter: blur(7px); opacity: .45; }
+.story-body.locked .bubble { position: relative; }
+.story-body.locked .bubble::after {
+  content: "🎧 Listen first"; position: absolute; left: 0; right: 0; bottom: 8px;
+  text-align: center; font-size: .85rem; font-weight: 800; color: var(--who);
+}
+.story-body.locked .line.say.me .bubble::after { color: #fff; }
