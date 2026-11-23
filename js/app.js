@@ -379,7 +379,8 @@ async function openWord(raw, story) {
 
   $("#sheet-word").textContent = word;
   $("#sheet-more").href = "https://www.oxfordlearnersdictionaries.com/definition/english/" + encodeURIComponent(word.replace(/'/g, ""));
-  metaEl.textContent = key ? (key.key ? "Key word ⭐" : "Spiko dictionary") : "";
+  const from = key && key.base !== lower ? `from “${raw}” · ` : "";
+  metaEl.textContent = key ? from + (key.key ? "Key word ⭐" : "Spiko dictionary") : "";
   sheet.hidden = false;
 
   const setSave = () => {
@@ -405,10 +406,15 @@ async function openWord(raw, story) {
   meaningEl.classList.add("loading");
   meaningEl.textContent = "Looking it up…";
   try {
-    const d = await fetchDefinition(word);
+    // Not in our dictionary: try the word, then its base forms, online
+    let d = null;
+    for (const cand of baseForms(word).slice(0, 4)) {
+      try { d = await fetchDefinition(cand); if (cand !== word) d = { ...d, base: cand }; break; } catch (e) { /* try next */ }
+    }
     if (req !== sheetReq) return;
+    if (!d) throw new Error("not found");
     meaning = d.def;
-    metaEl.textContent = [d.pos, d.phonetic].filter(Boolean).join(" · ");
+    metaEl.textContent = [d.base ? `base form: ${d.base}` : "", d.pos, d.phonetic].filter(Boolean).join(" · ");
     meaningEl.textContent = meaning;
   } catch (e) {
     if (req !== sheetReq) return;
