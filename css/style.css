@@ -503,3 +503,24 @@ a { color: var(--blue); }
 .model-answer { position: relative; padding-right: 60px; }
 .model-answer .icon-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
 .spiko-says.good .bubble { background: #E3F7EE; }
+
+/* ---------- End of story ---------- */
+.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 20; }
+.confetti i { position: absolute; top: -12px; width: 9px; height: 14px; border-radius: 2px; opacity: 0; animation: fall 2s ease-in forwards; }
+@keyframes fall { 0% { opacity: 1; transform: translateY(0) rotate(0); } 100% { opacity: 0; transform: translateY(95vh) rotate(540deg); } }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 18px 0 12px; }
+.stats .stat { margin: 0; padding: 12px 6px; font-size: .82rem; line-height: 1.2; color: var(--muted); }
+.stats .stat b { font-size: 1.8rem; margin-bottom: 4px; }
+.topic-progress { text-align: left; font-size: .9rem; color: var(--muted); }
+.topic-progress .progress { margin: 6px 0 4px; }
+.done .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ---------- My words ---------- */
+.words-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.words-head .btn { flex: none; margin-top: 4px; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; scrollbar-width: none; }
+.chip { flex: none; border: 0; border-radius: 999px; padding: 6px 14px; background: var(--light); color: var(--blue); font-weight: 800; }
+.chip[aria-pressed="true"] { background: var(--blue); color: #fff; }
+.word-item.active { border-color: var(--orange); background: #FFF8EC; }
+.wi-meta { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: .88rem; }
+.wi-story { background: var(--light); color: var(--blue); border-radius: 999px; padding: 0 8px; }

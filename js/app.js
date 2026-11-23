@@ -92,7 +92,7 @@ function renderHome() {
     <a class="continue-card" href="#/story/${esc(next.id)}">
       <span class="cc-cover">${esc(next.cover || "📖")}</span>
       <span class="cc-body">
-        <small>${Progress.percent(next.id) > 0 ? "Continue" : "Start here"} · ${esc(next.section)}</small>
+        <small>${Progress.get(next.id).done ? "Done ✓ · Listen again" : Progress.percent(next.id) > 0 ? "Continue" : "Start here"} · ${esc(next.section)}</small>
         <b>${esc(next.title)}</b>
         ${progressBar(Progress.percent(next.id), "thin")}
       </span>
@@ -190,16 +190,13 @@ async function boot() {
   else runSplash();
 }
 
-/* ---------- temporary bridges until the new story/question screens land ---------- */
+/* ---------- Story helpers ---------- */
 function linesOf(story) {
   return story.scenes ? story.scenes.flatMap((sc) => sc.lines) : (story.paragraphs || []).flat().map((text) => ({ who: "narrator", text }));
 }
 function lookupKeyWord(story, word) {
   const r = lookupWord(word);
   return r && { ...r, key: ((story && story.words) || []).includes(r.base) };
-}
-function sentencesOf(story) {
-  return linesOf(story).map((l, i) => ({ text: l.text, audio: l.audio || (Array.isArray(story.audio) ? story.audio[i] : null) }));
 }
 
 /* =====================================================================
@@ -710,58 +707,123 @@ function renderQuestions(story) {
   };
 }
 
+/* =====================================================================
+   End of story
+   ===================================================================== */
+function nextStoryAfter(story) {
+  const sec = sectionById(story.sectionId);
+  const inSection = sec.loaded.filter((s) => s.number > story.number).sort((a, b) => a.number - b.number)[0];
+  if (inSection) return { story: inSection };
+  if (story.number < (sec.total || 0)) return { soon: story.number + 1 };        // next one not written yet
+  const nextSec = SECTIONS[SECTIONS.indexOf(sec) + 1];
+  if (nextSec && nextSec.loaded[0]) return { story: nextSec.loaded[0] };
+  return { soon: null };
+}
+
+function confetti() {
+  const colors = ["#1F4FD1", "#FF9F1C", "#0F1B3D", "#DCE6FF"];
+  return `<div class="confetti" aria-hidden="true">${Array.from({ length: 28 }, (_, i) =>
+    `<i style="left:${(i * 37) % 100}%;background:${colors[i % 4]};animation-delay:${(i % 7) * 0.12}s;animation-duration:${1.8 + (i % 5) * 0.3}s"></i>`).join("")}</div>`;
+}
+
 function renderDone(story) {
-  const idx = STORIES.indexOf(story);
-  const next = STORIES[idx + 1];
+  Progress.set(story.id, { done: true });
+  const p = Progress.get(story.id);
+  const sec = sectionById(story.sectionId);
+  const st = sectionStats(sec);
   const saved = Words.all().filter((w) => w.story === story.id).length;
+  const nx = nextStoryAfter(story);
+  const choice = p.choice ? `${p.choice.score}/${p.choice.total}` : "–";
+  const spoken = (story.questions || []).length;
+
   app().innerHTML = `
+    ${confetti()}
     <div class="done">
       <svg class="done-logo" aria-hidden="true"><use href="#spiko-logo"/></svg>
       <h1>Story complete!</h1>
       <p class="sub">${esc(story.title)} · ${esc(story.section)}</p>
-      <div class="stat"><b>${saved}</b>${saved === 1 ? "word saved" : "words saved"}</div>
+      <div class="stats">
+        <div class="stat"><b>${choice}</b>correct<br/>answers</div>
+        <div class="stat"><b>${spoken}</b>questions<br/>spoken</div>
+        <div class="stat"><b>${saved}</b>${saved === 1 ? "word" : "words"}<br/>saved</div>
+      </div>
+      <div class="topic-progress">
+        <span>${esc(story.section)}: ${st.done} of ${st.total} stories</span>
+        ${progressBar(st.pct)}
+      </div>
       ${spikoSays("You listened, read and spoke English today. See you tomorrow for 15 more minutes!")}
       <div class="actions">
-        ${next
-          ? `<a class="btn btn-orange btn-big btn-block" href="#/story/${esc(next.id)}">Next story →</a>`
+        ${nx.story
+          ? `<a class="btn btn-orange btn-big btn-block" href="#/story/${esc(nx.story.id)}">Next story: ${esc(nx.story.title)} →</a>`
           : `<button id="next-soon" class="btn btn-orange btn-big btn-block" type="button">Next story <span class="soon">Coming soon</span></button>`}
-        <a class="btn btn-ghost btn-block" href="#/words">My words</a>
+        <div class="row2">
+          <a class="btn btn-ghost" href="#/words">My words</a>
+          <a class="btn btn-outline" href="#/topic/${esc(story.sectionId)}">All stories</a>
+        </div>
         <a class="btn btn-outline btn-block" href="#/story/${esc(story.id)}">Listen again</a>
       </div>
     </div>`;
+  Voice.say("Story complete! Great job!");
   const soon = $("#next-soon");
-  const more = story.sectionTotal && story.number < story.sectionTotal;
-  if (soon) soon.onclick = () => toast(more ? `Story ${story.number + 1} is coming soon 🚀` : "More stories coming soon 🚀");
+  if (soon) soon.onclick = () => toast(nx.soon ? `Story ${nx.soon} is coming soon 🚀` : "More stories coming soon 🚀");
 }
 
-/* ---------- My words ---------- */
+/* =====================================================================
+   My words
+   ===================================================================== */
+let wordsFilter = "all";
+
 function renderWords() {
-  const list = Words.all();
+  const all = Words.all();
+  const storyIds = [...new Set(all.map((w) => w.story))];
+  if (wordsFilter !== "all" && !storyIds.includes(wordsFilter)) wordsFilter = "all";
+  const list = wordsFilter === "all" ? all : all.filter((w) => w.story === wordsFilter);
+  const titleOf = (id) => (storyById(id) || {}).title || "Other";
+
   app().innerHTML = `
-    <a href="#/" class="eyebrow" style="text-decoration:none">← Back to story</a>
-    <h1 class="page-title" style="margin-top:6px">My words</h1>
-    <p class="sub">${list.length ? `${list.length} saved ${list.length === 1 ? "word" : "words"}. Tap 🔊 and say it out loud.` : ""}</p>
-    ${list.length ? `<ul class="word-list">${list.map((w) => `
-      <li class="word-item">
+    <a href="#/" class="back-link">${ICON.back}Home</a>
+    <div class="words-head">
+      <div>
+        <h1 class="page-title">My words</h1>
+        <p class="sub">${all.length ? `${all.length} saved ${all.length === 1 ? "word" : "words"}. Hear each one and say it out loud.` : ""}</p>
+      </div>
+      ${list.length ? `<button id="play-all" class="btn btn-primary" type="button">${ICON.play}<span>Play all</span></button>` : ""}
+    </div>
+    ${storyIds.length > 1 ? `<div class="chips">
+      <button class="chip" type="button" data-filter="all" aria-pressed="${wordsFilter === "all"}">All</button>
+      ${storyIds.map((id) => `<button class="chip" type="button" data-filter="${esc(id)}" aria-pressed="${wordsFilter === id}">${esc(titleOf(id))}</button>`).join("")}
+    </div>` : ""}
+    ${list.length ? `<ul class="word-list">${list.map((w, i) => `
+      <li class="word-item" data-i="${i}">
         <button class="icon-btn" type="button" data-say="${esc(w.word)}" aria-label="Hear ${esc(w.word)}">${ICON.speaker}</button>
         <div class="wi-body">
           <h3>${esc(w.word)}</h3>
-          <p>${esc(w.meaning || "")}</p>
-          <a href="https://www.oxfordlearnersdictionaries.com/definition/english/${encodeURIComponent(w.word)}" target="_blank" rel="noopener">More ↗</a>
+          <p>${esc(w.meaning || (lookupWord(w.word) || {}).meaning || "")}</p>
+          <span class="wi-meta"><span class="wi-story">${esc(titleOf(w.story))}</span>
+          <a href="https://www.oxfordlearnersdictionaries.com/definition/english/${encodeURIComponent(w.word)}" target="_blank" rel="noopener">More ↗</a></span>
         </div>
         <button class="del" type="button" data-del="${esc(w.word)}" aria-label="Remove ${esc(w.word)}">×</button>
       </li>`).join("")}</ul>`
     : `<div class="empty">${ICON.logo.replace("<svg", '<svg width="90" height="90"')}<p>No words yet.<br/>Tap any word in a story, then tap <b>Save</b>.</p></div>`}
     <div style="text-align:center"><button id="replay-intro" class="small-link" type="button">Show the intro again</button></div>`;
 
+  const items = $$(".word-item");
+  const mark = (i) => items.forEach((el, k) => el.classList.toggle("active", k === i));
   app().onclick = (e) => {
     const say = e.target.closest("[data-say]");
     const del = e.target.closest("[data-del]");
+    const chip = e.target.closest("[data-filter]");
     if (say) Voice.say(say.dataset.say);
     if (del) { Words.remove(del.dataset.del); renderWords(); }
+    if (chip) { wordsFilter = chip.dataset.filter; Voice.stop(); renderWords(); }
+    if (e.target.closest("#play-all")) {
+      Voice.playList(list.map((w) => ({ text: w.word })), 0, {
+        onItem: (i) => { mark(i); items[i].scrollIntoView({ behavior: "smooth", block: "center" }); },
+        onDone: () => mark(-1)
+      });
+    }
     if (e.target.id === "replay-intro") { store.set(KEY_ONBOARDED, false); location.hash = ""; location.reload(); }
   };
 }
-
 
 boot();
