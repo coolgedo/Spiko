@@ -599,3 +599,19 @@ button.story-row { width: 100%; font: inherit; text-align: left; cursor: pointer
 .sheet-emoji:empty { display: none; }
 .sheet-ex { margin: -8px 0 16px; padding: 10px 12px; border-radius: 14px; background: var(--light); font-size: 1.05rem; }
 .sheet-ex small { display: block; color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ---------- Questions v3 ---------- */
+.opt-text { flex: 1; }
+.opt-mark { font-size: 1.4rem; font-weight: 800; width: 24px; text-align: center; }
+.option.correct .opt-mark { color: #22A06B; }
+.option.wrong .opt-mark { color: #E5383B; }
+.ar-note {
+  margin: 14px 0 0; padding: 10px 14px; border-radius: 14px;
+  background: #FFF4E3; color: var(--navy); font-size: 1rem; line-height: 1.6; text-align: right;
+}
+.score-card { text-align: center; }
+.score-big { display: flex; align-items: baseline; justify-content: center; gap: 6px; margin: 10px 0; }
+.score-big b { font-size: 4.5rem; line-height: 1; color: var(--blue); }
+.score-big span { font-size: 1.6rem; color: var(--muted); }
+.score-card .btn { margin-top: 10px; }
+#q-repeat { margin-top: 12px; }
