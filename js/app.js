@@ -865,7 +865,6 @@ function renderDone(story) {
   const saved = Words.all().filter((w) => w.story === story.id).length;
   const nx = nextStoryAfter(story);
   const choice = p.choice ? `${p.choice.score}/${p.choice.total}` : "–";
-  const spoken = (story.questions || []).length;
 
   app().innerHTML = `
     ${confetti()}
@@ -874,11 +873,11 @@ function renderDone(story) {
       <svg class="done-logo" aria-hidden="true"><use href="#spiko-logo"/></svg>
       <h1>Story complete!</h1>
       <p class="sub">${esc(story.title)} · ${esc(story.topic)}</p>
-      <div class="stats">
-        <div class="stat"><b>${choice}</b>correct<br/>answers</div>
-        <div class="stat"><b>${spoken}</b>questions<br/>spoken</div>
+      <div class="stats two">
+        <div class="stat"><b>${choice}</b>multiple-choice<br/>score</div>
         <div class="stat"><b>${saved}</b>${saved === 1 ? "word" : "words"}<br/>saved</div>
       </div>
+      <p class="saved-badge">✓ Saved in your progress</p>
       <div class="topic-progress">
         <span>${esc(story.section)}: ${st.done} of ${st.total} stories</span>
         ${progressBar(st.pct)}
@@ -888,11 +887,11 @@ function renderDone(story) {
         ${nx.story
           ? `<a class="btn btn-orange btn-big btn-block" href="#/story/${esc(nx.story.id)}">Next story: ${esc(nx.story.title)} →</a>`
           : `<button id="next-soon" class="btn btn-orange btn-big btn-block" type="button">Next story <span class="soon">Coming soon</span></button>`}
+        <a class="btn btn-navy btn-big btn-block" href="#/section/${esc(story.sectionId)}">Back to topics</a>
         <div class="row2">
           <a class="btn btn-ghost" href="#/words">My words</a>
-          <a class="btn btn-outline" href="#/topic/${esc(story.sectionId)}/${esc(story.topicId)}">${esc(story.topic)}</a>
+          <a class="btn btn-outline" href="#/story/${esc(story.id)}">Listen again</a>
         </div>
-        <a class="btn btn-outline btn-block" href="#/story/${esc(story.id)}">Listen again</a>
       </div>
     </div>`;
   Voice.say("Story complete! Great job!");
@@ -929,8 +928,9 @@ function renderWords() {
       <li class="word-item" data-i="${i}">
         <button class="icon-btn" type="button" data-say="${esc(w.word)}" aria-label="Hear ${esc(w.word)}">${ICON.speaker}</button>
         <div class="wi-body">
-          <h3>${esc(w.word)}</h3>
+          <h3>${esc(w.word)} ${esc(w.emoji || (lookupWord(w.word) || {}).emoji || "")}</h3>
           <p>${esc(w.meaning || (lookupWord(w.word) || {}).meaning || "")}</p>
+          ${(w.ex || (lookupWord(w.word) || {}).ex) ? `<p class="wi-ex">“${esc(w.ex || lookupWord(w.word).ex)}”</p>` : ""}
           <span class="wi-meta"><span class="wi-story">${esc(titleOf(w.story))}</span>
           <a href="https://www.oxfordlearnersdictionaries.com/definition/english/${encodeURIComponent(w.word)}" target="_blank" rel="noopener">More ↗</a></span>
         </div>

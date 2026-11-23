@@ -615,3 +615,6 @@ button.story-row { width: 100%; font: inherit; text-align: left; cursor: pointer
 .score-big span { font-size: 1.6rem; color: var(--muted); }
 .score-card .btn { margin-top: 10px; }
 #q-repeat { margin-top: 12px; }
+.stats.two { grid-template-columns: 1fr 1fr; }
+.saved-badge { display: inline-block; margin: 0 0 14px; padding: 6px 14px; border-radius: 999px; background: #E3F7EE; color: #1E8E5A; font-weight: 800; }
+.word-item .wi-ex { color: var(--navy); font-style: italic; font-size: .95rem; }
