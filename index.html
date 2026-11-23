@@ -24,16 +24,14 @@
     <div class="splash-word"><span class="wordmark">spik<b>o</b></span><span class="slogan">Speak English. Live it.</span></div>
   </section>
 
-  <!-- 2. Intro -->
-  <section id="intro" class="screen onboard" dir="rtl" lang="ar" hidden>
-    <button class="skip" type="button" data-skip>تخطي · Skip</button>
-    <div class="onboard-body">
-      <svg class="onboard-logo" aria-hidden="true"><use href="#spiko-logo"/></svg>
-      <div id="intro-text" class="intro-text"></div>
+  <!-- 2. Intro: Instagram-story style slides (content in data/onboarding.json) -->
+  <section id="intro" class="stories" dir="rtl" lang="ar" hidden>
+    <div id="st-bars" class="st-bars" aria-hidden="true"></div>
+    <div class="st-top">
+      <button id="st-sound" class="st-sound" type="button" aria-label="الصوت" hidden>🔊</button>
+      <button id="st-skip" class="st-skip" type="button">تخطي</button>
     </div>
-    <div class="onboard-foot">
-      <button id="intro-next" class="btn btn-primary btn-block" type="button">التالي</button>
-    </div>
+    <div id="st-slides" class="st-slides"></div>
   </section>
 
   <!-- 3. Guide -->
