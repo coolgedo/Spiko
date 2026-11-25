@@ -2,7 +2,33 @@
 
 A mobile-first English learning web app for Arabic speakers. Plain HTML, CSS and JavaScript with no frameworks and no build step, ready for GitHub Pages. All content lives in `data/`, so you can add stories without touching code.
 
-The full product spec is in [`spiko_v2_prompt.md`](spiko_v2_prompt.md).
+The full product spec is in [`spiko_v2_prompt.md`](spiko_v2_prompt.md). The current **pilot** ([`spiko_pilot_story.md`](spiko_pilot_story.md)) has one story, *My Graduation Day*, with the full learning loop. Stories 2–7 show "Coming soon" for now; their files are still in `data/stories/`.
+
+## Pilot: the learning loop
+Story 1 is a `"type": "loop"` story. Each step is its own screen, with a step bar on top (`#/story/my-graduation-day/step/0…8`):
+
+1. **Listen** – one English voice reads the story at rate 0.8, with a speed switch. The text stays hidden ("Listen first").
+2. **Read** – the text appears and the sentence being read is highlighted.
+   - Every word is tappable: definition, speaker, example and Oxford link.
+   - Key phrases are underlined in blue.
+3. **Key phrases** – 8 cards, each with meaning, example, speaker and **Save**.
+4. **Shadowing** – one sentence at a time: Play, then Say it.
+   - "We heard: …" shows what Spiko understood, and the sentence's words turn green (heard) or red (missing).
+   - Buttons: Again / Next.
+5. **Quiz** – multiple choice by voice or tap, with ✓/✗ and the right answer read aloud.
+6. **Answer** – open questions by voice: "We heard", key-word feedback, Show answer, Repeat after me.
+7. **Your turn** – you tell your own story.
+   - A checklist of the 8 phrases ticks itself as speech recognition hears each one, in any form (woke up, felt proud…).
+   - It ends with "You used X of 8 new phrases".
+8. **Notice** – a small grammar note (`wake{s}` in the data marks the ending to highlight).
+9. **Done** – quiz score, phrases used, saved words.
+
+**Reviews:**
+- **When:** saved phrases come back as quick review cards the next day, then 3 days and 7 days after saving. The dates are stored in `localStorage` under `spiko.reviews`.
+- **Where:** when reviews are due, the home page shows a "Quick review" card and the menu shows a dot.
+- **"Not yet":** brings the phrase back the next day.
+
+**Intro:** the splash and intro now play every time the page opens, with "تخطي". The guide shows only on the first visit. The ☰ menu has "شاهد المقدمة".
 
 ## Flow
 1. **Splash** – the logo zooms in, blinks, then fades out.
@@ -34,9 +60,10 @@ index.html                  page shell + logo SVG
 css/style.css               styles (brand colors, Baloo 2)
 js/core.js                  voices (Voice), speech recognition (Listener), recorder, storage, dictionary lookup
 js/intro.js                 splash, intro slides, guide
-js/app.js                   navigation, story view, questions, end screen, My words
+js/app.js                   navigation, story view, questions, end screen, My words, menu
+js/loop.js                  the learning loop (9 steps) + phrase reviews
 data/sections.json          sections → topics → story slots
-data/stories/<id>.json      one file per story
+data/stories/<id>.json      one file per story (dialogue stories, or "type": "loop" like the pilot)
 data/characters.json        names, colours and voices of all characters
 data/dictionary.json        494 words: definition, example, emoji + irregular forms
 data/onboarding.json        intro slides + Arabic guide text

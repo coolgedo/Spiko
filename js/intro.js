@@ -1,9 +1,9 @@
-/* Spiko — splash, Instagram-style intro slides and guide (first visit only).
+/* Spiko — splash + Instagram-style intro (every time the page opens) and guide (first visit only).
    Content: data/onboarding.json. Depends on core.js; calls startApp() from app.js. */
 "use strict";
 
 /* =====================================================================
-   Onboarding: splash → intro → guide (first visit only)
+   Onboarding: splash → intro (every visit) → guide (first visit only)
    ===================================================================== */
 function show(id) {
   ["splash", "intro", "guide", "app-shell"].forEach((s) => { $("#" + s).hidden = s !== id; });
@@ -22,7 +22,10 @@ function runSplash() {
   let started = false;
   const go = () => { if (started) return; started = true; clearTimeout(t); Intro.start(); };
   const t = setTimeout(go, reduced ? 600 : 3100);
-  $("#splash").addEventListener("click", go, { once: true });
+  $("#splash").onclick = (e) => {
+    if (e.target.closest("#splash-skip")) { started = true; clearTimeout(t); finishOnboarding(); return; }
+    go();
+  };
 }
 
 // Inline logo (not <use>) so the eyes can blink
@@ -162,7 +165,8 @@ const Intro = {
     this.raf = requestAnimationFrame((t) => this.tick(t));
   },
 
-  toGuide() { this.stop(); runGuide(); },
+  // After the intro: the guide on the first visit, then straight into the app
+  toGuide() { this.stop(); if (store.get(KEY_ONBOARDED, false)) finishOnboarding(); else runGuide(); },
 
   stop() {
     cancelAnimationFrame(this.raf);

@@ -344,6 +344,7 @@ const Progress = {
   percent(id) {
     const p = this.get(id);
     if (p.done) return 1;
+    if (p.step != null) return Math.min(1, p.step / 8);          // learning-loop stories: 9 steps
     return ((p.listened ? 1 : 0) + (p.read ? 1 : 0) + (p.choice ? 1 : 0) + (p.answered ? 1 : 0)) / 4;
   }
 };

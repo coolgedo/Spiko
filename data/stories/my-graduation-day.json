@@ -45,7 +45,7 @@
   "notice": {
     "title": "He / she / it + -s",
     "rule": "With he / she / it, add -s.",
-    "pairs": [["I wake up", "he wakes up"], ["I feel", "she feels"]],
-    "fromStory": ["I wake up at six. → Adam wakes up at six.", "I feel proud. → He feels proud.", "My family claps and cheers."]
+    "pairs": [["I wake up", "he wake{s} up"], ["I feel", "she feel{s}"]],
+    "fromStory": ["I wake up at six. → Adam wake{s} up at six.", "I feel proud. → He feel{s} proud.", "My family clap{s} and cheer{s}."]
   }
 }

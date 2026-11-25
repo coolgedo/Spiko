@@ -23,11 +23,22 @@ function sectionById(id) { return SECTIONS.find((s) => s.id === id); }
 /* =====================================================================
    Router
    ===================================================================== */
+let appStarted = false;
 function startApp() {
   show("app-shell");
   updateCount();
-  window.addEventListener("hashchange", route);
+  if (!appStarted) { appStarted = true; window.addEventListener("hashchange", route); }
   route();
+}
+
+/* ---------- Menu: Home, My words, Review, شاهد المقدمة ---------- */
+function setupMenu() {
+  const btn = $("#menu-btn"), menu = $("#menu");
+  const close = () => { menu.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+  btn.onclick = (e) => { e.stopPropagation(); menu.hidden = !menu.hidden; btn.setAttribute("aria-expanded", String(!menu.hidden)); updateReviewBadge(); };
+  document.addEventListener("click", (e) => { if (!e.target.closest("#menu")) close(); });
+  menu.addEventListener("click", (e) => { if (e.target.closest("a")) close(); });
+  $("#menu-intro").onclick = () => { close(); Voice.stop(); Listener.abort(); Recorder.reset(); runSplash(); };
 }
 
 function route() {
@@ -40,6 +51,7 @@ function route() {
   const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean).map(decodeURIComponent);
   window.scrollTo(0, 0);
   if (parts[0] === "words") return renderWords();
+  if (parts[0] === "review") return renderReview(false);
   if (parts[0] === "section") {
     const sec = sectionById(parts[1]);
     return sec && sec.open ? renderSection(sec) : renderHome();
@@ -55,6 +67,17 @@ function route() {
     currentStory = story;
     if (state.storyId !== story.id) {
       Object.assign(state, { storyId: story.id, index: 0, revealed: !!Progress.get(story.id).read, qIndex: 0, cIndex: 0, choiceScore: 0 });
+    }
+    if (story.type === "loop") {                   // pilot: one screen per learning step
+      const n = parts[2] === "step" ? +parts[3] : Progress.get(story.id).done ? 0 : (Progress.get(story.id).step || 0);
+      if (parts[2] !== "step") { location.replace(`#/story/${story.id}/step/${n}`); return; }
+      if (state.lastRoute !== parts.join("/")) {   // entering a step starts it from its first card
+        if (n === 3) loop.shadow = 0;
+        if (n === 4) { loop.quiz = 0; loop.quizScore = 0; }
+        if (n === 5) loop.answer = 0;
+      }
+      state.lastRoute = parts.join("/");
+      return renderLoop(story, n);
     }
     const routeKey = parts.join("/");
     if (state.lastRoute !== routeKey) {            // entering Part A / Part B starts from question 1
@@ -113,6 +136,13 @@ function renderHome() {
         <b>${esc(next.title)}</b>
         ${progressBar(Progress.percent(next.id), "thin")}
       </span>
+      <span class="cc-go">${ICON.play}</span>
+    </a>` : ""}
+
+    ${Reviews.due().length ? `
+    <a class="review-banner" href="#/review">
+      <span class="rb-icon">🔁</span>
+      <span class="rb-body"><b>Quick review</b><small>${Reviews.due().length} saved ${Reviews.due().length === 1 ? "phrase" : "phrases"} to remember today</small></span>
       <span class="cc-go">${ICON.play}</span>
     </a>` : ""}
 
@@ -256,8 +286,9 @@ async function boot() {
     return;
   }
 
-  if (store.get(KEY_ONBOARDED, false)) startApp();
-  else runSplash();
+  setupMenu();
+  updateReviewBadge();
+  runSplash();          // splash + intro every time the page opens (تخطي to skip)
 }
 
 /* ---------- Story helpers ---------- */
@@ -932,7 +963,8 @@ function renderWords() {
           <p>${esc(w.meaning || (lookupWord(w.word) || {}).meaning || "")}</p>
           ${(w.ex || (lookupWord(w.word) || {}).ex) ? `<p class="wi-ex">“${esc(w.ex || lookupWord(w.word).ex)}”</p>` : ""}
           <span class="wi-meta"><span class="wi-story">${esc(titleOf(w.story))}</span>
-          <a href="https://www.oxfordlearnersdictionaries.com/definition/english/${encodeURIComponent(w.word)}" target="_blank" rel="noopener">More ↗</a></span>
+          ${w.kind === "phrase" ? '<span class="wi-story">phrase</span>' : ""}
+          <a href="https://www.oxfordlearnersdictionaries.com/definition/english/${encodeURIComponent(w.word.replace(/\s+/g, "-"))}" target="_blank" rel="noopener">More ↗</a></span>
         </div>
         <button class="del" type="button" data-del="${esc(w.word)}" aria-label="Remove ${esc(w.word)}">×</button>
       </li>`).join("")}</ul>`
@@ -946,7 +978,7 @@ function renderWords() {
     const del = e.target.closest("[data-del]");
     const chip = e.target.closest("[data-filter]");
     if (say) Voice.say(say.dataset.say);
-    if (del) { Words.remove(del.dataset.del); renderWords(); }
+    if (del) { Words.remove(del.dataset.del); Reviews.remove(del.dataset.del); renderWords(); }
     if (chip) { wordsFilter = chip.dataset.filter; Voice.stop(); renderWords(); }
     if (e.target.closest("#play-all")) {
       Voice.playList(list.map((w) => ({ text: w.word })), 0, {
@@ -954,7 +986,7 @@ function renderWords() {
         onDone: () => mark(-1)
       });
     }
-    if (e.target.id === "replay-intro") { store.set(KEY_ONBOARDED, false); location.hash = ""; location.reload(); }
+    if (e.target.id === "replay-intro") { Voice.stop(); runSplash(); }
   };
 }
 
