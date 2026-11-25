@@ -1,0 +1,51 @@
+{
+  "id": "my-graduation-day",
+  "type": "loop",
+  "number": 1,
+  "title": "My Graduation Day",
+  "cover": "🎓",
+  "paragraphs": [
+    ["Today is my graduation day.", "I wake up at six.", "I am happy, but I am nervous too.", "I put on my new suit and look in the mirror.", "I smile."],
+    ["My mother makes breakfast, but I can't eat.", "My sister laughs at me.", "My father wears his old wedding suit.", "It is a little small now!"],
+    ["We take a taxi to the university.", "The traffic is terrible.", "I check the time again and again."],
+    ["At the ceremony, I wait for my name.", "My hands are cold.", "Then I hear it: \"Adam Fares!\"", "I walk to the stage and take my certificate.", "My family claps and cheers.", "I feel proud."],
+    ["In the evening, we celebrate at a restaurant.", "My uncle asks me, \"Where are you working now?\"", "I don't have an answer."],
+    ["At night, I can't sleep.", "I open my laptop and search for jobs.", "Every job wants good English.", "So I make a decision: I will practice English every day."]
+  ],
+  "audio": null,
+  "phrases": [
+    { "phrase": "wake up", "meaning": "stop sleeping", "ex": "I wake up at seven every day." },
+    { "phrase": "put on", "meaning": "start wearing clothes", "ex": "I put on my jacket." },
+    { "phrase": "look in the mirror", "meaning": "see yourself in a mirror", "ex": "She looks in the mirror before work." },
+    { "phrase": "take a taxi", "meaning": "go somewhere by taxi", "ex": "We take a taxi to the airport." },
+    { "phrase": "again and again", "meaning": "many times", "ex": "He calls me again and again." },
+    { "phrase": "feel proud", "meaning": "feel very happy about something good", "ex": "I feel proud of my son." },
+    { "phrase": "search for jobs", "meaning": "look for work", "ex": "She searches for jobs online." },
+    { "phrase": "make a decision", "meaning": "decide something", "ex": "I made a big decision today." }
+  ],
+  "choice": [
+    { "q": "How does Adam feel in the morning?", "options": ["angry", "happy and nervous", "tired and sad"], "answer": 1 },
+    { "q": "Why can't he eat breakfast?", "options": ["the food is cold", "he is nervous", "he is late"], "answer": 1 },
+    { "q": "How do they go to the university?", "options": ["by bus", "by car", "by taxi"], "answer": 2 },
+    { "q": "What does the uncle ask?", "options": ["\"Where is your certificate?\"", "\"Where are you working now?\"", "\"Are you hungry?\""], "answer": 1 },
+    { "q": "\"Make a decision\" means…", "options": ["decide something", "make a cake", "make a mistake"], "answer": 0 }
+  ],
+  "questions": [
+    { "q": "What does Adam do after he wakes up?", "a": "He puts on his new suit and looks in the mirror." },
+    { "q": "What is funny about his father?", "a": "He wears his old wedding suit, and it is a little small." },
+    { "q": "How does Adam feel on the stage?", "a": "He feels proud." },
+    { "q": "Why can't Adam sleep at night?", "a": "Because he doesn't have a job, and every job wants good English." },
+    { "q": "What decision does Adam make?", "a": "He decides to practice English every day." }
+  ],
+  "yourTurn": {
+    "prompt": "Tell me about an important day in your life. Use these phrases: wake up, put on, feel proud, make a decision.",
+    "use": ["wake up", "put on", "feel proud", "make a decision"],
+    "example": "My wedding day was very important. I woke up early. I put on my new suit and looked in the mirror. I felt nervous, but I also felt proud. That day, I made a decision: to be a good husband."
+  },
+  "notice": {
+    "title": "He / she / it + -s",
+    "rule": "With he / she / it, add -s.",
+    "pairs": [["I wake up", "he wakes up"], ["I feel", "she feels"]],
+    "fromStory": ["I wake up at six. → Adam wakes up at six.", "I feel proud. → He feels proud.", "My family claps and cheers."]
+  }
+}

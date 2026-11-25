@@ -12,8 +12,13 @@ const WORD_RE = /(a\.m\.|p\.m\.|Mr\.|Ms\.|[A-Za-zÀ-ÿ]+(?:['’][A-Za-zÀ-ÿ]+)
 const missing = {};
 for (const f of fs.readdirSync(path.join(root, "data/stories")).filter((x) => x.endsWith(".json"))) {
   const s = JSON.parse(fs.readFileSync(path.join(root, "data/stories", f), "utf8"));
-  const texts = [s.title, ...s.scenes.flatMap((sc) => sc.lines.map((l) => l.text)),
-    ...(s.choice || []).flatMap((c) => [c.q, ...c.options]), ...(s.questions || []).flatMap((q) => [q.q, q.a])];
+  const texts = [s.title,
+    ...(s.scenes || []).flatMap((sc) => sc.lines.map((l) => l.text)),
+    ...(s.paragraphs || []).flat(),
+    ...(s.phrases || []).flatMap((p) => [p.phrase, p.meaning, p.ex]),
+    ...(s.choice || []).flatMap((c) => [c.q, ...c.options]), ...(s.questions || []).flatMap((q) => [q.q, q.a]),
+    ...(s.yourTurn ? [s.yourTurn.prompt, s.yourTurn.example] : []),
+    ...(s.notice ? [s.notice.title, s.notice.rule, ...s.notice.pairs.flat(), ...(s.notice.fromStory || [])] : [])];
   for (const t of texts) t.split(WORD_RE).filter((_, i) => i % 2).forEach((w) => {
     if (!ctx.lookupWord(w)) (missing[w.toLowerCase()] = missing[w.toLowerCase()] || new Set()).add(f);
   });

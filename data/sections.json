@@ -16,7 +16,7 @@
           "stories": [
             {
               "number": 1,
-              "id": "graduation-day"
+              "id": "my-graduation-day"
             }
           ]
         },
@@ -27,8 +27,7 @@
           "cover": "🔎",
           "stories": [
             {
-              "number": 2,
-              "id": "looking-for-a-job"
+              "number": 2
             }
           ]
         },
@@ -39,20 +38,16 @@
           "cover": "🤝",
           "stories": [
             {
-              "number": 3,
-              "id": "the-first-interview"
+              "number": 3
             },
             {
-              "number": 4,
-              "id": "rejected"
+              "number": 4
             },
             {
-              "number": 5,
-              "id": "getting-better"
+              "number": 5
             },
             {
-              "number": 6,
-              "id": "the-second-interview"
+              "number": 6
             }
           ]
         },
@@ -63,8 +58,7 @@
           "cover": "💼",
           "stories": [
             {
-              "number": 7,
-              "id": "accepted"
+              "number": 7
             }
           ]
         }
